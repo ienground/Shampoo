@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Shampoo</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="store">Store</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_new_device">Add new device</string>
+    <string name="shampoo">Shampoo</string>
+    <string name="conditioner">Conditioner</string>
+    <string name="bodywash">Bodywash</string>
+    <string name="cleansing">Cleasing</string>
+    <string name="unknown">Unknown</string>
+    <string name="room">장소</string>
+    <string name="type">종류</string>
+    <string name="capacity">용량</string>
+</resources>

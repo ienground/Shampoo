@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="auto"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="16dp"
+        style="@style/Widget.Material3.CardView.Elevated">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/usual_margin">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="샴푸"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textStyle="bold"
+                android:layout_marginEnd="@dimen/usual_margin"
+                app:layout_constraintEnd_toStartOf="@id/ic_connect"
+                app:layout_constraintTop_toTopOf="@id/tv_name"
+                app:layout_constraintBottom_toBottomOf="@id/tv_name"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                tools:text="Pretendard"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="16sp"
+                android:layout_marginEnd="@dimen/usual_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_type"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/ic_connect"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_cloud"
+                app:tint="?attr/colorOnSecondaryContainer"
+                android:layout_marginEnd="@dimen/usual_margin_half"
+                app:layout_constraintEnd_toStartOf="@id/ic_battery"
+                app:layout_constraintTop_toTopOf="@id/tv_type"
+                app:layout_constraintBottom_toBottomOf="@id/tv_type"/>
+
+            <ImageView
+                android:id="@+id/ic_battery"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_battery_80"
+                app:tint="?attr/colorOnSecondaryContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_type"
+                app:layout_constraintBottom_toBottomOf="@id/tv_type"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_capacity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="72%"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progress"
+                app:layout_constraintBottom_toBottomOf="@id/progress"/>
+
+            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                android:id="@+id/progress"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/usual_margin"
+                android:layout_marginTop="@dimen/usual_margin"
+                app:rcMax="100"
+                app:rcProgress="10"
+                app:rcBackgroundColor="?attr/colorSurfaceVariant"
+                app:rcProgressColor="?attr/colorSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_capacity"
+                app:layout_constraintTop_toBottomOf="@id/tv_name"
+                app:layout_constraintBottom_toBottomOf="parent"  />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
