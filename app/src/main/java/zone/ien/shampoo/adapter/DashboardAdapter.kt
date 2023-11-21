@@ -6,36 +6,43 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import zone.ien.shampoo.R
-import zone.ien.shampoo.data.DashboardEntity
+import zone.ien.shampoo.callback.DashboardCallback
+import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.AdapterDashboardBinding
 
-class DashboardAdapter(var items: ArrayList<DashboardEntity>): RecyclerView.Adapter<DashboardAdapter.ItemViewHolder>() {
+class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter<DashboardAdapter.ItemViewHolder>() {
 
     private lateinit var context: Context
+    private var callbackListener: DashboardCallback? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         context = parent.context
-        val binding: AdapterDashboardBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.adapter_dashboard, parent, false);
+        val binding: AdapterDashboardBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.adapter_dashboard, parent, false)
         return ItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.binding.tvCapacity.text = "${items[holder.bindingAdapterPosition].capacity}%"
-        holder.binding.progress.max = 100f
+        holder.binding.tvCapacity.text = "${(items[holder.bindingAdapterPosition].capacity / items[holder.bindingAdapterPosition].max * 100).toInt()}%"
+        holder.binding.progress.max = items[holder.bindingAdapterPosition].max.toFloat()
         holder.binding.progress.progress = items[holder.bindingAdapterPosition].capacity.toFloat()
         holder.binding.tvName.text = items[holder.bindingAdapterPosition].title
         holder.binding.tvType.text = context.getString(when (items[holder.bindingAdapterPosition].type) {
-            DashboardEntity.TYPE_SHAMPOO -> R.string.shampoo
-            DashboardEntity.TYPE_CONDITIONER -> R.string.conditioner
-            DashboardEntity.TYPE_BODYWASH -> R.string.bodywash
-            DashboardEntity.TYPE_CLEANSING -> R.string.cleansing
+            DeviceEntity.TYPE_SHAMPOO -> R.string.shampoo
+            DeviceEntity.TYPE_CONDITIONER -> R.string.conditioner
+            DeviceEntity.TYPE_BODYWASH -> R.string.bodywash
+            DeviceEntity.TYPE_CLEANSING -> R.string.cleansing
             else -> R.string.unknown
         })
+        holder.binding.root.setOnClickListener {
+            callbackListener?.callback(holder.bindingAdapterPosition, items[holder.bindingAdapterPosition].id ?: -1)
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
-
+    fun setClickCallback(callbackListener: DashboardCallback) {
+        this.callbackListener = callbackListener
+    }
 
     inner class ItemViewHolder(val binding: AdapterDashboardBinding): RecyclerView.ViewHolder(binding.root) {
 

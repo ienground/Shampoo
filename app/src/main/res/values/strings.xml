@@ -13,4 +13,11 @@
     <string name="room">장소</string>
     <string name="type">종류</string>
     <string name="capacity">용량</string>
+    <string name="add">Add</string>
+    <string name="search">Search</string>
+    <string name="measuring">Measuring..</string>
+    <string name="measurement_completed">Measurement completed</string>
+    <string name="current_capacity">현 용량</string>
+    <string name="full_capacity">전체 용량</string>
+    <string name="name">Name</string>
 </resources>
