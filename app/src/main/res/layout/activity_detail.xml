@@ -39,6 +39,54 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="@dimen/usual_margin"
+                    app:layout_constraintDimensionRatio="3:2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/btn_battery"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/usual_margin"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:icon="@drawable/ic_battery_alert"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_liquid"
+                    app:layout_constraintTop_toBottomOf="@id/card_image"/>
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/btn_liquid"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:icon="@drawable/ic_devices"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toEndOf="@id/btn_battery"
+                    app:layout_constraintEnd_toStartOf="@id/btn_measure"
+                    app:layout_constraintTop_toBottomOf="@id/card_image"/>
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/btn_measure"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/usual_margin"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:icon="@drawable/ic_renew"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toEndOf="@id/btn_liquid"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card_image"/>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_detail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -46,7 +94,7 @@
                     style="@style/Widget.Material3.CardView.Elevated"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/btn_battery">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -125,15 +173,51 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:tabGravity="start"
+                    app:tabMode="scrollable"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card_detail">
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/capacity" />
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/battery" />
+
+                </com.google.android.material.tabs.TabLayout>
+
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/graph_usage"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginHorizontal="@dimen/usual_margin"
                     android:layout_marginTop="@dimen/usual_margin"
+                    app:layout_constraintDimensionRatio="3:2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/card_detail" />
+                    app:layout_constraintTop_toBottomOf="@id/tabs" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/usual_margin"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/adapter_device_log"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/graph_usage" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

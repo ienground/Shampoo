@@ -4,10 +4,12 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.content.res.Resources
 import android.util.TypedValue
 import java.nio.ByteBuffer
-import kotlin.experimental.and
 
 
 object MyUtils {
+
+    fun hasProperty(characteristic: BluetoothGattCharacteristic, property: Int): Boolean = (characteristic.properties and property) == property
+
     fun getBluetoothGattProperty(id: Int): String {
         val result = arrayListOf<String>()
         val properties = arrayListOf(
@@ -47,6 +49,15 @@ object MyUtils {
         }
         copy.reverse()
         return ByteBuffer.wrap(copy).int
+    }
+
+    fun ByteArray.toDouble(): Double {
+        val copy = copyOf()
+        if (copy.size != 8) {
+            throw Exception("wrong len: ${copy.joinToString { "${it.toInt()}," }}")
+        }
+        copy.reverse()
+        return ByteBuffer.wrap(copy).double
     }
 
     fun getAttrColor(theme: Resources.Theme, id: Int): Int = TypedValue().apply { theme.resolveAttribute(id, this, true) }.data

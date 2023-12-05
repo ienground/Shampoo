@@ -1,5 +1,5 @@
 package zone.ien.shampoo.constant
 
 object IntentID {
-    const val BLE_DEVICE = "ble_device"
+    const val CALLBACK_DEVICE_VALUE = "callback_device_value"
 }

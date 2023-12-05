@@ -1,10 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Shampoo" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--         Customize your theme here.-->
         <item name="android:fontFamily">@font/pretendard</item>
+        <item name="textAppearanceLargePopupMenu">@style/Theme.Shampoo.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/Theme.Shampoo.BodyLarge</item>
+        <item name="popupMenuBackground">@drawable/material_popup_background</item>
+        <item name="android:colorControlNormal">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="Theme.Shampoo" parent="Base.Theme.Shampoo" />
+
+    <style name="Theme.Shampoo.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/pretendard</item>
+        <item name="android:fontFamily">@font/pretendard</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Theme.Shampoo.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
+        <item name="materialAlertDialogTitleIconStyle">
+            @style/Theme.Shampoo.MaterialAlertDialog.Tint
+        </item>
+    </style>
+
+    <style name="Theme.Shampoo.MaterialAlertDialog.Tint" parent="MaterialAlertDialog.Material3.Title.Icon.CenterStacked">
+        <item name="android:tint">?attr/colorOnSecondaryContainer</item>
+    </style>
+
 </resources>

@@ -6,9 +6,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import zone.ien.shampoo.R
+import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.callback.DashboardCallback
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.AdapterDashboardBinding
+import zone.ien.shampoo.utils.Dlog
 
 class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter<DashboardAdapter.ItemViewHolder>() {
 
@@ -22,7 +24,7 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.binding.tvCapacity.text = "${(items[holder.bindingAdapterPosition].capacity / items[holder.bindingAdapterPosition].max * 100).toInt()}%"
+        holder.binding.tvCapacity.text = "${(items[holder.bindingAdapterPosition].capacity.toFloat() / items[holder.bindingAdapterPosition].max * 100).toInt()}%"
         holder.binding.progress.max = items[holder.bindingAdapterPosition].max.toFloat()
         holder.binding.progress.progress = items[holder.bindingAdapterPosition].capacity.toFloat()
         holder.binding.tvName.text = items[holder.bindingAdapterPosition].title
@@ -32,6 +34,16 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
             DeviceEntity.TYPE_BODYWASH -> R.string.bodywash
             DeviceEntity.TYPE_CLEANSING -> R.string.cleansing
             else -> R.string.unknown
+        })
+        holder.binding.icBattery.setImageResource(when (items[holder.bindingAdapterPosition].battery) {
+            in 95..100 -> R.drawable.ic_battery_full
+            in 90 until 95 -> R.drawable.ic_battery_90
+            in 70 until 90 -> R.drawable.ic_battery_80
+            in 60 until 70 -> R.drawable.ic_battery_60
+            in 50 until 60 -> R.drawable.ic_battery_50
+            in 30 until 50 -> R.drawable.ic_battery_30
+            in 20 until 30 -> R.drawable.ic_battery_20
+            else -> R.drawable.ic_battery_alert
         })
         holder.binding.root.setOnClickListener {
             callbackListener?.callback(holder.bindingAdapterPosition, items[holder.bindingAdapterPosition].id ?: -1)

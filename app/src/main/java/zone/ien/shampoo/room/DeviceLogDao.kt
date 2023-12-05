@@ -20,6 +20,18 @@ interface DeviceLogDao {
     @Query("SELECT * FROM DeviceLogDatabase WHERE id = :id")
     fun get(id: Long): DeviceLogEntity
 
+    @Query("SELECT * FROM (SELECT * FROM DeviceLogDatabase WHERE (parentId = :parentId AND battery <> -1) ORDER BY timestamp DESC)")
+    fun getBattery(parentId: Long): List<DeviceLogEntity>
+
+    @Query("SELECT * FROM (SELECT * FROM DeviceLogDatabase WHERE (parentId = :parentId AND battery <> -1) ORDER BY timestamp DESC) LIMIT :count")
+    fun getBattery(parentId: Long, count: Int): List<DeviceLogEntity>
+
+    @Query("SELECT * FROM (SELECT * FROM DeviceLogDatabase WHERE (parentId = :parentId AND capacity <> -1) ORDER BY timestamp DESC)")
+    fun getCapacity(parentId: Long): List<DeviceLogEntity>
+
+    @Query("SELECT * FROM (SELECT * FROM DeviceLogDatabase WHERE (parentId = :parentId AND capacity <> -1) ORDER BY timestamp DESC) LIMIT :count")
+    fun getCapacity(parentId: Long, count: Int): List<DeviceLogEntity>
+
     @Query("SELECT * FROM DeviceLogDatabase WHERE parentId = :parentId")
     fun getByParentId(parentId: Long): List<DeviceLogEntity>
 

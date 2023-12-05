@@ -53,7 +53,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    val roomVersion = "2.6.0"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
@@ -63,6 +63,7 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.github.PhilJay:MpAndroidChart:v3.0.2")
     implementation("com.opencsv:opencsv:5.8")
+    implementation("com.github.bumptech.glide:glide:4.14.2")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 

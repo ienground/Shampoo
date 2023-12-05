@@ -7,7 +7,10 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +23,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import zone.ien.shampoo.R
+import zone.ien.shampoo.constant.ActionID
 import zone.ien.shampoo.databinding.ActivityMainBinding
 import zone.ien.shampoo.fragment.MainDashboardFragment
+import zone.ien.shampoo.fragment.MainStoreFragment
+import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils.toInt
@@ -29,7 +35,8 @@ import zone.ien.shampoo.utils.MyUtils.toInt
 const val TAG = "ShampooTAG"
 
 class MainActivity : AppCompatActivity(),
-        MainDashboardFragment.OnFragmentInteractionListener
+        MainDashboardFragment.OnFragmentInteractionListener,
+        MainStoreFragment.OnFragmentInteractionListener
 {
 
     lateinit var binding: ActivityMainBinding
@@ -49,7 +56,7 @@ class MainActivity : AppCompatActivity(),
         binding.navView.setOnItemSelectedListener {
             loadFragment(when (it.itemId) {
                 R.id.navigation_dashboard -> MainDashboardFragment.newInstance()
-                R.id.navigation_store -> MainDashboardFragment.newInstance()
+                R.id.navigation_store -> MainStoreFragment.newInstance()
                 else -> MainDashboardFragment.newInstance()
             })
         }
@@ -58,39 +65,27 @@ class MainActivity : AppCompatActivity(),
         bm = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bm.adapter
 
+        val intentFilter = IntentFilter()
+        intentFilter.let {
+            it.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            it.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+            it.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            it.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+            it.addAction(ActionID.ACTION_CONNECT_DEVICE)
+            it.addAction(ActionID.ACTION_NOTIFY_DESCRIPTOR)
+            it.addAction(ActionID.ACTION_SEND_DEVICE)
+        }
+
+        registerReceiver(BluetoothDeviceReceiver(), intentFilter, RECEIVER_EXPORTED)
+
         GlobalScope.launch(Dispatchers.IO) {
             val data = deviceDatabase?.getDao()?.getAll()
             data?.let {
                 for (entity in it) {
                     val device = bluetoothAdapter.getRemoteDevice(entity.address)
-                    if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return@let
-                    device.connectGatt(applicationContext, true, object: BluetoothGattCallback() {
-                        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-                            super.onConnectionStateChange(gatt, status, newState)
-                            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
-                            when (status) {
-                                BluetoothGatt.GATT_FAILURE, 133 -> { // unknown code 133
-                                    gatt?.disconnect()
-                                    gatt?.close()
-                                }
-                                BluetoothGatt.GATT_SUCCESS -> {
-                                    if (newState == BluetoothGatt.STATE_CONNECTED) {
-                                        Dlog.d(TAG, "Connected to ${gatt?.device?.name}")
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
-                            super.onCharacteristicRead(gatt, characteristic, value, status)
-                            Dlog.d(TAG, "value: $value")
-                        }
-                        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-                            super.onCharacteristicChanged(gatt, characteristic, value)
-                            Dlog.d(TAG, "change: ${value.toInt()}")
-                        }
+                    sendBroadcast(Intent(ActionID.ACTION_CONNECT_DEVICE).apply {
+                        putExtra(BluetoothDevice.EXTRA_DEVICE, device)
                     })
-                    Dlog.d(TAG, "device: ${device.name} ${device.address} ${device}")
                 }
             }
         }

@@ -10,9 +10,7 @@ data class DeviceEntity(
     var title: String,
     var address: String,
     var product: String,
-    var capacity: Double,
     var max: Int,
-//    var model: Int,
     var type: Int,
     var room: Int,
 ) {
@@ -20,6 +18,7 @@ data class DeviceEntity(
     @Ignore var battery: Int = 0
     @Ignore var lastConnectionTime: Long = 0L
     @Ignore var logs: ArrayList<DeviceLogEntity> = arrayListOf()
+    @Ignore var capacity: Int = 0
 
     override fun toString(): String {
         val builder = StringBuilder("[$id] $title(${address}) - $product, $capacity/$max, ${getTypeString(type)} in ${room} / battery ${battery}% / last: ${Date(lastConnectionTime)}[")

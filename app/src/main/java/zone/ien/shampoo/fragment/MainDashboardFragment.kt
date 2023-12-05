@@ -22,9 +22,11 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DetailActivity
 import zone.ien.shampoo.activity.DeviceAddActivity
+import zone.ien.shampoo.activity.NotificationsActivity
 import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.adapter.DashboardAdapter
 import zone.ien.shampoo.callback.DashboardCallback
@@ -32,15 +34,17 @@ import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.FragmentMainDashboardBinding
 import zone.ien.shampoo.room.DeviceDatabase
+import zone.ien.shampoo.room.DeviceLogDatabase
 import zone.ien.shampoo.utils.Dlog
+import java.util.Calendar
 
 class MainDashboardFragment : Fragment() {
 
     private lateinit var binding: FragmentMainDashboardBinding
 
     private var mListener: OnFragmentInteractionListener? = null
-    private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
     private var deviceDatabase: DeviceDatabase? = null
+    private var deviceLogDatabase: DeviceLogDatabase? = null
 
     private var dashboardCallback = object: DashboardCallback {
         override fun callback(position: Int, id: Long) {
@@ -72,9 +76,10 @@ class MainDashboardFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.menu_add -> {
                         startActivity(Intent(requireContext(), DeviceAddActivity::class.java))
-//                        barcodeLauncher.launch(ScanOptions().apply {
-//                            setOrientationLocked(true)
-//                        })
+                        true
+                    }
+                    R.id.menu_notifications -> {
+                        startActivity(Intent(requireContext(), NotificationsActivity::class.java))
                         true
                     }
                     else -> false
@@ -83,14 +88,40 @@ class MainDashboardFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         deviceDatabase = DeviceDatabase.getInstance(requireContext())
+        deviceLogDatabase = DeviceLogDatabase.getInstance(requireContext())
+
+        binding.subTitle.text = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+            in 6..10 -> getString(R.string.user_hello_morning)
+            in 11..16 -> getString(R.string.user_hello_afternoon)
+            in 17..20 -> getString(R.string.user_hello_evening)
+            else -> getString(R.string.user_hello_night)
+        }
 
         GlobalScope.launch(Dispatchers.IO) {
             val data = deviceDatabase?.getDao()?.getAll() as ArrayList?
             data?.let {
-                val adapter = DashboardAdapter(it).apply {
-                    setClickCallback(dashboardCallback)
+                for (entity in it) {
+                    val battery = deviceLogDatabase?.getDao()?.getBattery(entity.id ?: -1, 5)
+                    val capacity = deviceLogDatabase?.getDao()?.getCapacity(entity.id ?: -1, 5)
+
+                    battery?.let {
+                        if (it.isNotEmpty()) entity.battery = it[0].battery
+                    }
+                    capacity?.let {
+                        if (it.isNotEmpty()) entity.capacity = it[0].capacity
+                    }
                 }
-                binding.list.adapter = adapter
+                withContext(Dispatchers.Main) {
+                    val adapter = DashboardAdapter(it).apply {
+                        setClickCallback(dashboardCallback)
+                    }
+                    binding.list.adapter = adapter
+
+                    if (data.isEmpty()) {
+                        binding.icNoDevices.visibility = View.VISIBLE
+                        binding.tvNoDevices.visibility = View.VISIBLE
+                    }
+                }
             }
         }
 
@@ -98,14 +129,6 @@ class MainDashboardFragment : Fragment() {
 //        val adapter = DashboardAdapter(list)
 //        binding.list.adapter = adapter
 
-        // barcode
-        barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
-            if (result.contents == null) {
-                Dlog.d(TAG, "result null")
-            } else {
-                Dlog.d(TAG, "Scanned ${result.contents}")
-            }
-        }
     }
 
     override fun onAttach(context: Context) {

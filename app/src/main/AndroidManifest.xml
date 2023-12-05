@@ -9,6 +9,7 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -30,12 +31,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Shampoo"
         tools:targetApi="31">
-        <service
-            android:name=".service.DeviceService"
-            android:enabled="true"
-            android:exported="true"></service>
-
-        <receiver android:name=".receiver.BluetoothDeviceReceiver"
+        <activity
+            android:name=".activity.NotificationsActivity"
             android:exported="false" />
 
         <activity

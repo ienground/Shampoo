@@ -22,6 +22,8 @@ import zone.ien.shampoo.fragment.DeviceAddScanFragment
 import zone.ien.shampoo.fragment.DeviceAddSettingFragment
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceEntity
+import zone.ien.shampoo.room.DeviceLogDatabase
+import zone.ien.shampoo.room.DeviceLogEntity
 import zone.ien.shampoo.utils.Dlog
 
 class DeviceAddActivity : AppCompatActivity(),
@@ -35,6 +37,7 @@ class DeviceAddActivity : AppCompatActivity(),
     private var pagePosition = DEVICE_ADD_PAGE_SCAN
 
     private var deviceDatabase: DeviceDatabase? = null
+    private var deviceLogDatabase: DeviceLogDatabase? = null
 
     private val deviceAddActivityCallback = object: DeviceAddActivityCallback {
         override fun scrollTo(page: Int) {
@@ -70,6 +73,7 @@ class DeviceAddActivity : AppCompatActivity(),
         binding = DataBindingUtil.setContentView(this, R.layout.activity_device_add)
 
         deviceDatabase = DeviceDatabase.getInstance(this)
+        deviceLogDatabase = DeviceLogDatabase.getInstance(this)
 
         pages = listOf(
             DeviceAddScanFragment.newInstance().apply { setCallbackListener(deviceAddActivityCallback) },
@@ -114,18 +118,14 @@ class DeviceAddActivity : AppCompatActivity(),
             if (pagePosition + 1 < pages.size) binding.viewpager.setCurrentItem(++pagePosition, true)
         }
         binding.btnFinish.setOnClickListener {
-            Dlog.d(TAG, "deviceName $deviceName")
-            Dlog.d(TAG, "deviceAddress $deviceAddress")
-            Dlog.d(TAG, "deviceProduct $deviceProduct")
-            Dlog.d(TAG, "deviceCapacity $deviceCapacity")
-            Dlog.d(TAG, "deviceMax $deviceMax")
-            Dlog.d(TAG, "deviceType $deviceType")
-            Dlog.d(TAG, "deviceRoom $deviceRoom")
-            Dlog.d(TAG, "deviceBarcode $deviceBarcode")
-
-            val entity = DeviceEntity(deviceName, deviceAddress, deviceProduct, deviceCapacity, deviceMax, deviceType, deviceRoom)
+            val entity = DeviceEntity(deviceName, deviceAddress, deviceProduct, deviceMax, deviceType, deviceRoom)
+            val log = DeviceLogEntity(-1, System.currentTimeMillis(), -1, deviceCapacity)
             GlobalScope.launch(Dispatchers.IO) {
-                deviceDatabase?.getDao()?.add(entity)
+                val id = deviceDatabase?.getDao()?.add(entity) ?: -1
+                if (id != -1L) {
+                    log.parentId = id
+                    deviceLogDatabase?.getDao()?.add(log)
+                }
 
                 withContext(Dispatchers.Main) {
                     finish()
@@ -147,7 +147,7 @@ class DeviceAddActivity : AppCompatActivity(),
         var deviceName = ""
         var deviceAddress = ""
         var deviceProduct = ""
-        var deviceCapacity = 0.0
+        var deviceCapacity = 0
         var deviceMax = 0
         var deviceType = DeviceEntity.TYPE_UNKNOWN
         var deviceRoom = -1

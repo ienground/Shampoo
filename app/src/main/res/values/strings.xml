@@ -3,7 +3,11 @@
     <string name="dashboard">Dashboard</string>
     <string name="store">Store</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_hello_morning">Good morning☀️</string>
+    <string name="user_hello_afternoon">Have a great lunch🍽️</string>
+    <string name="user_hello_evening">Good evening🎆</string>
+    <string name="user_hello_night">Sleep tight🌙</string>
+
     <string name="add_new_device">Add new device</string>
     <string name="shampoo">Shampoo</string>
     <string name="conditioner">Conditioner</string>
@@ -20,4 +24,11 @@
     <string name="current_capacity">현 용량</string>
     <string name="full_capacity">전체 용량</string>
     <string name="name">Name</string>
+    <string name="notifications">Notifications</string>
+    <string name="no_devices">No devices</string>
+    <string name="measure_again">다시 측정하기</string>
+    <string name="delete">Delete</string>
+    <string name="delete_title">Delete?</string>
+    <string name="delete_content">Are you sure to delete?</string>
+    <string name="battery">Battery</string>
 </resources>

@@ -23,6 +23,9 @@ interface DeviceDao {
     @Query("SELECT * FROM DeviceDatabase WHERE address = :address")
     fun get(address: String): DeviceEntity
 
+    @Query("DELETE FROM DeviceDatabase WHERE id = :id")
+    fun delete(id: Long)
+
     @Query("SELECT EXISTS(SELECT * FROM DeviceDatabase WHERE id = :id)")
     fun checkIsAlreadyInDB(id: Long): Boolean
 

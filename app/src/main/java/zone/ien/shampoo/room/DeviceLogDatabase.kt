@@ -7,9 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [DeviceLogEntity::class], version = 1)
+@Database(entities = [DeviceLogEntity::class], version = 1, exportSchema = false)
 abstract class DeviceLogDatabase: RoomDatabase() {
-    abstract fun getDao(): DeviceDao
+    abstract fun getDao(): DeviceLogDao
 
     companion object {
         private var instance: DeviceLogDatabase? = null

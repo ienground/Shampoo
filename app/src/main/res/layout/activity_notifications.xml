@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropdown_device"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:endIconDrawable="@drawable/ic_arrow_drop_down"
+            app:endIconMode="dropdown_menu"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/dropdown_device_auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/tv_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2023-12-01"
+            android:layout_marginStart="@dimen/usual_margin"
+            app:chipIcon="@drawable/ic_today"
+            app:layout_constraintWidth_percent="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/btn_search"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="~"
+            app:layout_constraintStart_toEndOf="@id/tv_start_date"
+            app:layout_constraintEnd_toStartOf="@id/tv_end_date"
+            app:layout_constraintTop_toTopOf="@id/tv_start_date"
+            app:layout_constraintBottom_toBottomOf="@id/tv_start_date" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/tv_end_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2023-12-01"
+            android:layout_marginEnd="@dimen/usual_margin"
+            app:chipIcon="@drawable/ic_today"
+            app:layout_constraintWidth_percent="0.3"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintTop_toTopOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/btn_search"/>
+
+        <ImageButton
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="?attr/colorSurfaceVariant"
+            android:foreground="@drawable/ripple_rounded"
+            android:padding="@dimen/usual_margin_half"
+            android:layout_marginEnd="@dimen/usual_margin"
+            android:layout_marginTop="@dimen/usual_margin"
+            app:icon="@drawable/ic_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dropdown_device" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/usual_margin"
+            tools:listitem="@layout/adapter_notifications"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_end_date"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

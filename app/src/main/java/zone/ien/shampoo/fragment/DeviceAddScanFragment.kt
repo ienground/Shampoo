@@ -26,10 +26,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import zone.ien.shampoo.R
@@ -38,14 +41,16 @@ import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.adapter.DeviceAddScanAdapter
 import zone.ien.shampoo.callback.DeviceAddActivityCallback
 import zone.ien.shampoo.callback.DeviceAddCallback
+import zone.ien.shampoo.constant.ActionID
 import zone.ien.shampoo.constant.DeviceInfo
 import zone.ien.shampoo.constant.IntentID
 import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.databinding.FragmentDeviceAddScanBinding
 import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.utils.Dlog
+import zone.ien.shampoo.utils.MyUtils
 import zone.ien.shampoo.utils.MyUtils.getBluetoothGattProperty
-import zone.ien.shampoo.utils.MyUtils.toInt
+import zone.ien.shampoo.utils.MyUtils.toDouble
 import java.util.UUID
 
 class DeviceAddScanFragment : Fragment() {
@@ -68,13 +73,19 @@ class DeviceAddScanFragment : Fragment() {
     private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
     private val deviceAddCallback = object: DeviceAddCallback {
         override fun add(device: BluetoothDevice) {
-            if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
-            gatt = device.connectGatt(requireContext(), true, gattCallback)
+            requireContext().sendBroadcast(Intent(ActionID.ACTION_CONNECT_DEVICE).apply {
+                putExtra(BluetoothDevice.EXTRA_DEVICE, device)
+            })
+            barcodeLauncher.launch(ScanOptions().apply {
+                setOrientationLocked(true)
+                setCameraId(1)
+            })
         }
     }
 
-    private fun hasProperty(characteristic: BluetoothGattCharacteristic, property: Int): Boolean = (characteristic.properties and property) == property
 
+
+    /*
     private val gattCallback = object: BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
@@ -129,12 +140,13 @@ class DeviceAddScanFragment : Fragment() {
 
         override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
             super.onCharacteristicChanged(gatt, characteristic, value)
-//            Dlog.d(TAG, "onCharacteristicChanged ${characteristic.uuid} ${characteristic.value} $value")
+//            Dlog.d(TAG, "onCharacteristicChanged ${characteristic.uuid} $value}")
 
-            val intent = Intent(IntentID.BLE_DEVICE)
+//            val intent = Intent(IntentID.BLE_DEVICE)
 //            val intent = Intent(requireContext(), BluetoothDeviceReceiver::class.java)
-            intent.putExtra(IntentKey.BLE_CHAR_CHANGED, value.toInt())
-            requireContext().sendBroadcast(intent)
+            Dlog.d(TAG, "${String(value)}")
+//            intent.putExtra(IntentKey.BLE_CHAR_CHANGED, value.toDouble())
+//            requireContext().sendBroadcast(intent)
 //            Dlog.d(TAG, value.toInt().toString())
         }
 
@@ -144,10 +156,7 @@ class DeviceAddScanFragment : Fragment() {
             Dlog.d(TAG, "onCharacteristicRead ${characteristic.uuid}")
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
-                Dlog.d(TAG, value.joinToString {
-                    it.toInt().toString()
-                })
+                Dlog.d(TAG, String(value))
             }
         }
 
@@ -158,11 +167,15 @@ class DeviceAddScanFragment : Fragment() {
         }
     }
 
+     */
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_device_add_scan, container, false)
 
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (requireActivity() as AppCompatActivity).supportActionBar?.title = null
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer)) })
 
         return binding.root
     }
@@ -177,6 +190,10 @@ class DeviceAddScanFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    android.R.id.home -> {
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                        true
+                    }
                     R.id.menu_search -> {
                         if (isScanning) {
                             menuItem.setIcon(R.drawable.ic_search)
@@ -203,20 +220,7 @@ class DeviceAddScanFragment : Fragment() {
 
         // barcode
         barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
-            if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return@registerForActivityResult
-            gatt?.let {
-                notifyCharacteristic?.let { characteristic ->
-                    val descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
-                    descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                    Dlog.d(TAG, "descriptor: ${getBluetoothGattProperty(descriptor.characteristic.properties)} ${descriptor.permissions} ${descriptor.value}")
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        Dlog.d(TAG, "enable notification 1 ${it.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)}")
-                    } else {
-                        descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                        Dlog.d(TAG, "enable notification 2 ${it.writeDescriptor(descriptor)}")
-                    }
-                }
-            }
+            requireContext().sendBroadcast(Intent(ActionID.ACTION_NOTIFY_DESCRIPTOR))
             if (result.contents == null) {
                 Dlog.d(TAG, "result null")
             } else {
@@ -259,11 +263,12 @@ class DeviceAddScanFragment : Fragment() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
 
-            if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
-//            if (result.device != null && result.device.name != null && hashDeviceMap[result.device.address] == null) {
-            if (result.device != null && result.device.name == DeviceInfo.DEVICE_NAME && hashDeviceMap[result.device.address] == null) {
-                hashDeviceMap[result.device.address] = result.device
-                adapter.add(result.device)
+            if (context != null) {
+                if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
+                if (result.device != null && result.device.name.equals(DeviceInfo.DEVICE_NAME, ignoreCase = true) && hashDeviceMap[result.device.address] == null) {
+                    hashDeviceMap[result.device.address] = result.device
+                    adapter.add(result.device)
+                }
             }
         }
 

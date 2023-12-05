@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.transition.DrawableCrossFadeTransition
 import com.opencsv.CSVReader
 import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DeviceAddActivity
@@ -64,6 +67,15 @@ class DeviceAddInfoFragment : Fragment() {
             DeviceAddActivity.deviceMax = it[3].toInt()
             binding.tvContentType.text = it[1]
             binding.tvContentCapacity.text = it[3]
+
+            if (it[6] != "") {
+                Dlog.d(TAG, "link: ${it[6]}")
+                Glide.with(this)
+                    .load(it[6])
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.ic_error)
+                    .into(binding.imgPreview)
+            }
         }
     }
 
