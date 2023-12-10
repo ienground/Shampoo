@@ -13,6 +13,7 @@ import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.iterator
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -64,11 +66,8 @@ class DeviceAddScanFragment : Fragment() {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var isScanning = false
     private var hashDeviceMap = HashMap<String, BluetoothDevice>()
+    private var menuSearch: MenuItem? = null
     private lateinit var adapter: DeviceAddScanAdapter
-
-    private var gatt: BluetoothGatt? = null
-    private var readCharacteristic: BluetoothGattCharacteristic? = null
-    private var notifyCharacteristic: BluetoothGattCharacteristic? = null
 
     private lateinit var barcodeLauncher: ActivityResultLauncher<ScanOptions>
     private val deviceAddCallback = object: DeviceAddCallback {
@@ -83,99 +82,8 @@ class DeviceAddScanFragment : Fragment() {
         }
     }
 
-
-
-    /*
-    private val gattCallback = object: BluetoothGattCallback() {
-        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            super.onConnectionStateChange(gatt, status, newState)
-            if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
-            when (status) {
-                BluetoothGatt.GATT_FAILURE, 133 -> { // unknown code 133
-                    gatt?.disconnect()
-                    gatt?.close()
-                }
-                BluetoothGatt.GATT_SUCCESS -> {
-                    if (newState == BluetoothGatt.STATE_CONNECTED) {
-                        Dlog.d(TAG, "Connected to ${gatt?.device?.name}")
-                        gatt?.discoverServices()
-
-                        gatt?.device?.let { device ->
-//                            DeviceAddActivity.deviceName = device.name
-                            DeviceAddActivity.deviceAddress = device.address
-                        }
-
-                        barcodeLauncher.launch(ScanOptions().apply {
-                            setOrientationLocked(true)
-                            setCameraId(1)
-                        })
-                    }
-                }
-            }
-        }
-
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            super.onServicesDiscovered(gatt, status)
-            if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                val services = gatt?.services ?: return
-                for (service in services) {
-                    Dlog.d(TAG, "service <${service.uuid}>")
-                    for (characteristic in service.characteristics) {
-                        Dlog.d(TAG, "(${getBluetoothGattProperty(characteristic.properties)}) ${characteristic.uuid}")
-                        if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_READ)) {
-                            gatt.readCharacteristic(characteristic)
-                            readCharacteristic = characteristic
-                        }
-                        if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
-                            gatt.setCharacteristicNotification(characteristic, true)
-                            notifyCharacteristic = characteristic
-                        }
-                        Dlog.d(TAG, "success")
-                    }
-                }
-            }
-            Dlog.d(TAG, "onServicesDiscovered")
-        }
-
-        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-            super.onCharacteristicChanged(gatt, characteristic, value)
-//            Dlog.d(TAG, "onCharacteristicChanged ${characteristic.uuid} $value}")
-
-//            val intent = Intent(IntentID.BLE_DEVICE)
-//            val intent = Intent(requireContext(), BluetoothDeviceReceiver::class.java)
-            Dlog.d(TAG, "${String(value)}")
-//            intent.putExtra(IntentKey.BLE_CHAR_CHANGED, value.toDouble())
-//            requireContext().sendBroadcast(intent)
-//            Dlog.d(TAG, value.toInt().toString())
-        }
-
-        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
-            super.onCharacteristicRead(gatt, characteristic, value, status)
-
-            Dlog.d(TAG, "onCharacteristicRead ${characteristic.uuid}")
-
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Dlog.d(TAG, String(value))
-            }
-        }
-
-        override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
-            super.onCharacteristicWrite(gatt, characteristic, status)
-
-            Dlog.d(TAG, "onCharacteristicWrite")
-        }
-    }
-
-     */
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_device_add_scan, container, false)
-
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = null
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (requireActivity() as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer)) })
 
         return binding.root
     }
@@ -186,6 +94,10 @@ class DeviceAddScanFragment : Fragment() {
         requireActivity().addMenuProvider(object: MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_device_add_scan, menu)
+                for (menuItem in menu.iterator()) {
+                    menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
+                    if (menuItem.itemId == R.id.menu_search) menuSearch = menuItem
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -220,7 +132,9 @@ class DeviceAddScanFragment : Fragment() {
 
         // barcode
         barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
-            requireContext().sendBroadcast(Intent(ActionID.ACTION_NOTIFY_DESCRIPTOR))
+            requireContext().sendBroadcast(Intent(ActionID.ACTION_NOTIFY_DESCRIPTOR).apply {
+                putExtra(IntentKey.DEVICE_ADDRESS, DeviceAddActivity.deviceAddress)
+            })
             if (result.contents == null) {
                 Dlog.d(TAG, "result null")
             } else {
@@ -243,7 +157,8 @@ class DeviceAddScanFragment : Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             isScanning = false
             scanner.stopScan(callback)
-        }, 2 * 60 * 1000)
+            menuSearch?.setIcon(R.drawable.ic_search)
+        }, 10 * 1000)
 
         isScanning = true
         scanner.startScan(callback)

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="item"
+            type="zone.ien.shampoo.data.CategoryObject" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="auto"
+        android:foreground="@drawable/ripple_rounded"
+        android:background="@drawable/bg_rounded"
+        android:backgroundTint="?attr/colorSurfaceVariant"
+        android:padding="@dimen/usual_margin">
+
+        <ImageView
+            android:id="@+id/ic_background"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="?attr/colorPrimaryContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/ic_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@{item.icon}"
+            tools:src="@drawable/ic_settings"
+            app:tint="?attr/colorOnSecondaryContainer"
+            app:layout_constraintStart_toStartOf="@id/ic_background"
+            app:layout_constraintEnd_toEndOf="@id/ic_background"
+            app:layout_constraintTop_toTopOf="@id/ic_background"
+            app:layout_constraintBottom_toBottomOf="@id/ic_background" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{item.title}"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="18sp"
+            tools:text="Title"
+            android:layout_marginStart="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/ic_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{item.content}"
+            android:textColor="?attr/colorOutline"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            tools:text="Title"
+            android:layout_marginStart="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/ic_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

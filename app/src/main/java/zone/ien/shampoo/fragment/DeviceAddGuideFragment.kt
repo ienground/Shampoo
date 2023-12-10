@@ -11,17 +11,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.databinding.DataBindingUtil
+import zone.ien.shampoo.BuildConfig
 import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DeviceAddActivity
 import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.callback.DeviceAddActivityCallback
+import zone.ien.shampoo.constant.ActionID
 import zone.ien.shampoo.constant.IntentID
 import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.constant.MessageType
 import zone.ien.shampoo.databinding.FragmentDeviceAddGuideBinding
 import zone.ien.shampoo.databinding.FragmentMainDashboardBinding
 import zone.ien.shampoo.utils.Dlog
+import zone.ien.shampoo.utils.MyUtils
 import java.util.Date
 import kotlin.math.abs
 
@@ -41,14 +46,23 @@ class DeviceAddGuideFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_device_add_guide, container, false)
 
-//        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = null
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.imgGuide.clipToOutline = true
+
+        if (BuildConfig.DEBUG) {
+            binding.imgGuide.setOnClickListener {
+                requireContext().sendBroadcast(Intent(ActionID.ACTION_SEND_DEVICE).apply {
+                    putExtra(IntentKey.DEVICE_ADDRESS, DeviceAddActivity.deviceAddress)
+                    putExtra(IntentKey.MESSAGE_TYPE, MessageType.TYPE_MEASURE_INIT)
+                    putExtra(IntentKey.MESSAGE_VALUE, "request")
+                })
+            }
+        }
 
         requireContext().registerReceiver(object: BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -69,7 +83,7 @@ class DeviceAddGuideFragment : Fragment() {
                                 binding.btnMeasureAgain.isEnabled = true
                                 binding.progress.visibility = View.INVISIBLE
                                 binding.icCheck.visibility = View.VISIBLE
-                                binding.tvState.text = getString(R.string.measurement_completed)
+                                binding.tvState.text = binding.tvState.context.getString(R.string.measurement_completed)
                                 binding.tvWeight.text = values.average().toString()
                                 DeviceAddActivity.deviceCapacity = values.average().toInt()
                                 callbackListener?.setButtonEnabled(isPrev = false, isEnabled = true)
@@ -97,7 +111,7 @@ class DeviceAddGuideFragment : Fragment() {
 
             callbackListener?.setButtonEnabled(isPrev = false, isEnabled = false)
         }
-
+        binding.btnMeasureAgain.isEnabled = false
     }
 
     fun setCallbackListener(callbackListener: DeviceAddActivityCallback?) {
@@ -108,6 +122,7 @@ class DeviceAddGuideFragment : Fragment() {
         super.onResume()
         callbackListener?.setButtonEnabled(isPrev = true, isEnabled = true)
         callbackListener?.setButtonEnabled(isPrev = false, isEnabled = false)
+        callbackListener?.setTitle(R.string.measure_current_capacity)
     }
 
     override fun onAttach(context: Context) {

@@ -1,6 +1,8 @@
 package zone.ien.shampoo.receiver
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -17,16 +19,21 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings.Global
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DeviceAddActivity
 import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.constant.ActionID
+import zone.ien.shampoo.constant.ChannelID
 import zone.ien.shampoo.constant.IntentID
 import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.constant.MessageType
+import zone.ien.shampoo.constant.NotificationID
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceLogDao
 import zone.ien.shampoo.room.DeviceLogDatabase
@@ -41,17 +48,17 @@ import kotlin.reflect.typeOf
 
 class BluetoothDeviceReceiver : BroadcastReceiver() {
 
-    private var gatt: BluetoothGatt? = null
+    private var gatts: MutableMap<String, BluetoothGatt> = mutableMapOf()
     private var context: Context? = null
-    private var writeCharacteristic: BluetoothGattCharacteristic? = null
-    private var readCharacteristic: BluetoothGattCharacteristic? = null
-    private var notifyCharacteristic: BluetoothGattCharacteristic? = null
+    private var writeCharacteristics: MutableMap<String, BluetoothGattCharacteristic> = mutableMapOf()
+    private var readCharacteristics: MutableMap<String, BluetoothGattCharacteristic> = mutableMapOf()
+    private var notifyCharacteristics: MutableMap<String, BluetoothGattCharacteristic> = mutableMapOf()
 
     private var deviceDatabase: DeviceDatabase? = null
     private var deviceLogDatabase: DeviceLogDatabase? = null
     private var notificationsDatabase: NotificationsDatabase? = null
 
-    private var deviceId: Long = -1
+    private var deviceIds: MutableMap<String, Long> = mutableMapOf()
 
     @OptIn(DelicateCoroutinesApi::class)
     private val gattCallback = object : BluetoothGattCallback() {
@@ -75,14 +82,14 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                             GlobalScope.launch(Dispatchers.IO) {
                                 val entity = deviceDatabase?.getDao()?.get(device.address)
                                 entity?.let {
-                                    deviceId = it.id ?: -1
+                                    deviceIds[device.address] = it.id ?: -1
                                 }
                             }
-                        }
 
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            context?.let { Dlog.d(TAG, setNotifyDescriptor(it).toString()) }
-                        }, 10 * 1000)
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                context?.let { Dlog.d(TAG, setNotifyDescriptor(it, device.address).toString()) }
+                            }, 10 * 1000)
+                        }
                     }
                 }
             }
@@ -93,18 +100,20 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
             if (context?.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 val services = gatt?.services ?: return
-                for (service in services) {
-                    for (characteristic in service.characteristics) {
-                        if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_WRITE)) {
-                            writeCharacteristic = characteristic
-                        }
-                        if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_READ)) {
-                            gatt.readCharacteristic(characteristic)
-                            readCharacteristic = characteristic
-                        }
-                        if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
-                            gatt.setCharacteristicNotification(characteristic, true)
-                            notifyCharacteristic = characteristic
+                gatt.device?.let { device ->
+                    for (service in services) {
+                        for (characteristic in service.characteristics) {
+                            if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_WRITE)) {
+                                writeCharacteristics[device.address] = characteristic
+                            }
+                            if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_READ)) {
+                                gatt.readCharacteristic(characteristic)
+                                readCharacteristics[device.address] = characteristic
+                            }
+                            if (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
+                                gatt.setCharacteristicNotification(characteristic, true)
+                                notifyCharacteristics[device.address] = characteristic
+                            }
                         }
                     }
                 }
@@ -113,39 +122,68 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
 
         override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, byte: ByteArray) {
             super.onCharacteristicChanged(gatt, characteristic, byte)
-            Dlog.d(TAG, "onCharacteristicChanged")
+            Dlog.d(TAG, "onCharacteristicChanged ${gatts.size}")
             val data = String(byte).split(":")
             val type = data[0].toInt()
             val value = data[1].toInt()
 
-            context?.sendBroadcast(Intent(IntentID.CALLBACK_DEVICE_VALUE).apply {
-                putExtra(IntentKey.MESSAGE_TYPE, type)
-                putExtra(IntentKey.MESSAGE_VALUE, value)
-            })
+            context?.let { context ->
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                nm.createNotificationChannel(NotificationChannel(ChannelID.BATTERY_LOW_ID, context.getString(R.string.battery_warning) ?: "", NotificationManager.IMPORTANCE_DEFAULT))
+                nm.createNotificationChannel(NotificationChannel(ChannelID.LIQUID_LOW_ID, context.getString(R.string.liquid_warning) ?: "", NotificationManager.IMPORTANCE_DEFAULT))
 
-            GlobalScope.launch(Dispatchers.IO) {
-                if (deviceId != -1L) {
-                    val entity = DeviceLogEntity(deviceId, System.currentTimeMillis(), -1, -1)
-                    when (type) {
-                        MessageType.TYPE_BATTERY -> entity.battery = value
-                        MessageType.TYPE_BATTERY_LOW -> {
-                            entity.battery = value
-                            val notiEntity = NotificationsEntity(MessageType.TYPE_BATTERY_LOW, System.currentTimeMillis(), "배터리 없음 ${value}", "배터리가 없어요", entity.id ?: -1)
-                            notificationsDatabase?.getDao()?.add(notiEntity)
+                context.sendBroadcast(Intent(IntentID.CALLBACK_DEVICE_VALUE).apply {
+                    putExtra(IntentKey.MESSAGE_TYPE, type)
+                    putExtra(IntentKey.MESSAGE_VALUE, value)
+                })
 
-                        }
-                        MessageType.TYPE_LEVEL -> entity.capacity = value
-                        MessageType.TYPE_LEVEL_LOW -> {
-                            entity.capacity = value
-                            val notiEntity = NotificationsEntity(MessageType.TYPE_LEVEL_LOW, System.currentTimeMillis(), "샴푸 없음 ${value}", "샴푸가 없어요", entity.id ?: -1)
-                            notificationsDatabase?.getDao()?.add(notiEntity)
+                GlobalScope.launch(Dispatchers.IO) {
+                    gatt.device?.let {
+                        if (deviceIds[it.address] != -1L) {
+                            val device = deviceDatabase?.getDao()?.get(it.address)
+                            val entity = DeviceLogEntity(deviceIds[it.address] ?: -1, System.currentTimeMillis(), -1, -1)
+                            when (type) {
+                                MessageType.TYPE_BATTERY -> entity.battery = value
+                                MessageType.TYPE_BATTERY_LOW -> {
+                                    entity.battery = value
+                                    val title = context.getString(R.string.battery_low_title, device?.title)
+                                    val content = context.getString(R.string.battery_low_content, value)
+                                    val notiEntity = NotificationsEntity(MessageType.TYPE_BATTERY_LOW, System.currentTimeMillis(), title, content, entity.id ?: -1)
+                                    notificationsDatabase?.getDao()?.add(notiEntity)
+
+                                    NotificationCompat.Builder(context, ChannelID.BATTERY_LOW_ID).apply {
+                                        setContentTitle(title)
+                                        setContentText(content)
+                                        setSmallIcon(R.drawable.ic_battery_alert)
+                                        color = ContextCompat.getColor(context, R.color.md_theme_light_primary)
+
+                                        nm.notify(NotificationID.SHAMPOO_BATTERY_LOW + (entity.id ?: -1).toInt(), build())
+                                    }
+                                }
+
+                                MessageType.TYPE_LEVEL -> entity.capacity = value
+                                MessageType.TYPE_LEVEL_LOW -> {
+                                    entity.capacity = value
+                                    val title = context.getString(R.string.liquid_low_title, device?.title)
+                                    val content = context.getString(R.string.liquid_low_content, value)
+                                    val notiEntity = NotificationsEntity(MessageType.TYPE_LEVEL_LOW, System.currentTimeMillis(), title, content, entity.id ?: -1)
+                                    notificationsDatabase?.getDao()?.add(notiEntity)
+
+                                    NotificationCompat.Builder(context, ChannelID.LIQUID_LOW_ID).apply {
+                                        setContentTitle(title)
+                                        setContentText(content)
+                                        setSmallIcon(R.drawable.ic_shampoo_alert)
+                                        color = ContextCompat.getColor(context, R.color.md_theme_light_primary)
+
+                                        nm.notify(NotificationID.SHAMPOO_LIQUID_LOW + (entity.id ?: -1).toInt(), build())
+                                    }
+                                }
+                            }
+                            if (entity.battery != -1 || entity.capacity != -1) deviceLogDatabase?.getDao()?.add(entity)
                         }
                     }
-                    if (entity.battery != -1 || entity.capacity != -1) deviceLogDatabase?.getDao()?.add(entity)
                 }
             }
-
-
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
@@ -154,28 +192,33 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun setNotifyDescriptor(context: Context): Boolean {
+    private fun setNotifyDescriptor(context: Context, address: String): Boolean {
         if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return false
 
-        Dlog.d(TAG, "setNotifyDescriptor null ${notifyCharacteristic == null}")
-        return gatt?.let {
-            notifyCharacteristic?.let { characteristic ->
+        var resultCode = -1
+        val result = gatts[address]?.let {
+            notifyCharacteristics[address]?.let { characteristic ->
                 val descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    it.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE) == BluetoothStatusCodes.SUCCESS
+                    resultCode = it.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+                    resultCode == BluetoothStatusCodes.SUCCESS
                 } else {
                     descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
                     it.writeDescriptor(descriptor)
                 }
             } ?: false
         } ?: false
+
+        Dlog.d(TAG, "setNotifyDescriptor $result gatts ${gatts[address]} / char ${notifyCharacteristics[address]} ${resultCode}")
+        return result
     }
 
-    private fun sendMessage(context: Context, type: Int, message: String) {
+    private fun sendMessage(context: Context, address: String, type: Int, message: String) {
+        Dlog.d(TAG, "sendMessage")
         if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
 
-        gatt?.let {
-            writeCharacteristic?.let { characteristic ->
+        gatts[address]?.let {
+            writeCharacteristics[address]?.let { characteristic ->
                 Log.d(TAG, "$type $message")
                 val value = "${type}:${message}".toByteArray()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -224,12 +267,11 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                     }
                 }
 
-                if (gatt?.device?.name != (device?.name ?: "")) {
-                    gatt = device?.connectGatt(context, true, gattCallback)
+                device?.let {
+                    if (gatts[it.address] == null) {
+                        gatts[it.address] = it.connectGatt(context, true, gattCallback)
+                    }
                 }
-
-
-//                gatt = device?.connectGatt(context, true, gattCallback)
             }
 
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
@@ -249,15 +291,31 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 }
                 Dlog.d(TAG, "Request new connect ${device?.name}")
 
-                gatt = device?.connectGatt(context, true, gattCallback)
+                device?.let {
+                    if (gatts[it.address] == null) {
+                        gatts[it.address] = it.connectGatt(context, true, gattCallback)
+                    }
+                }
+            }
+            ActionID.ACTION_DISCONNECT_DEVICE -> {
+                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS)
+                Dlog.d(TAG, "Request disconnect ${address} ${gatts[address]}")
+                gatts[address]?.close()
+                gatts.remove(address)
+                writeCharacteristics.remove(address)
+                notifyCharacteristics.remove(address)
+                readCharacteristics.remove(address)
+//                val
             }
             ActionID.ACTION_NOTIFY_DESCRIPTOR -> {
-                setNotifyDescriptor(context)
+                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
+                setNotifyDescriptor(context, address)
             }
             ActionID.ACTION_SEND_DEVICE -> {
+                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
                 val type = intent.getIntExtra(IntentKey.MESSAGE_TYPE, -1)
                 val message = intent.getStringExtra(IntentKey.MESSAGE_VALUE) ?: ""
-                sendMessage(context, type, message)
+                sendMessage(context, address, type, message)
             }
         }
     }

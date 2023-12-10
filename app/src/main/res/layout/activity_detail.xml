@@ -20,6 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="18sp"
                 tools:text="Name" />
 
         </com.google.android.material.appbar.MaterialToolbar>
@@ -38,17 +39,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.google.android.material.card.MaterialCardView
+                <ImageView
                     android:id="@+id/card_image"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:background="@drawable/rounded_corners"
                     android:layout_marginHorizontal="@dimen/usual_margin"
-                    app:layout_constraintDimensionRatio="3:2"
+                    app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                </com.google.android.material.card.MaterialCardView>
+                </ImageView>
 
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/btn_battery"
@@ -68,7 +70,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginTop="@dimen/usual_margin"
-                    app:icon="@drawable/ic_devices"
+                    app:icon="@drawable/ic_shampoo_full"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toEndOf="@id/btn_battery"
                     app:layout_constraintEnd_toStartOf="@id/btn_measure"
@@ -141,6 +143,9 @@
                             tools:text="@string/shampoo"
                             android:textColor="?attr/colorOnSecondaryContainer"
                             android:textAlignment="textEnd"
+                            android:singleLine="true"
+                            android:ellipsize="marquee"
+                            android:marqueeRepeatLimit="marquee_forever"
                             android:layout_marginStart="@dimen/usual_margin"
                             app:layout_constraintStart_toEndOf="@id/tv_title_type"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -210,7 +215,7 @@
                     android:id="@+id/list"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/usual_margin"
+                    android:layout_marginTop="@dimen/usual_margin"
                     tools:itemCount="5"
                     tools:listitem="@layout/adapter_device_log"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

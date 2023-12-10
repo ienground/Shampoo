@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_general"
+        android:title="@string/settings_general"
+        android:icon="@drawable/ic_settings" />
+    <item
+        android:id="@+id/menu_place"
+        android:title="@string/location_setting"
+        android:icon="@drawable/ic_location" />
+    <item
+        android:id="@+id/menu_notifications"
+        android:title="@string/notifications"
+        android:icon="@drawable/ic_notifications" />
+    <item
+        android:id="@+id/menu_info"
+        android:title="@string/info_and_ask"
+        android:icon="@drawable/ic_info" />
+</menu>

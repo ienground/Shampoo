@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:title="@string/shampoo_version"
+        app:key="app_version"
+        app:icon="@drawable/ic_icon"
+        app:summary="@string/versionName" />
+
+    <Preference
+        app:title="@string/update_log"
+        app:key="changelog"
+        app:icon="@drawable/ic_update"
+        app:summary="@string/pref_changelog_exp"/>
+
+    <Preference
+        app:title="@string/ask_to_dev"
+        app:key="ask_to_dev"
+        app:icon="@drawable/ic_mail"
+        app:summary="@string/pref_ask_exp"/>
+
+    <Preference
+        app:title="@string/open_source_license"
+        app:key="open_source"
+        app:icon="@drawable/ic_open_source"
+        app:summary="@string/pref_opens_exp"/>
+
+</PreferenceScreen>

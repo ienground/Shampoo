@@ -9,6 +9,7 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
@@ -32,9 +33,17 @@
         android:theme="@style/Theme.Shampoo"
         tools:targetApi="31">
         <activity
+            android:name=".activity.EditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LogsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.NotificationsActivity"
             android:exported="false" />
-
         <activity
             android:name=".activity.DetailActivity"
             android:exported="false" />

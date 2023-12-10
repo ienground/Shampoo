@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            app:maxButtonHeight="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/settings"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="20sp"
+                android:fontFamily="@font/pretendard"
+                android:layout_marginEnd="@dimen/usual_margin"
+                android:singleLine="true"
+                android:maxLines="1"/>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <androidx.slidingpanelayout.widget.SlidingPaneLayout
+            android:id="@+id/sliding_pane_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/app_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:orientation="vertical"
+                        android:theme="@style/ThemeOverlay.AppCompat.Light"
+                        android:clickable="true"
+                        android:focusable="auto"
+                        android:background="@drawable/ripple_rounded">
+
+                        <ImageView
+                            android:id="@+id/imgLogo"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:src="@drawable/ic_icon_color"
+                            android:contentDescription="@string/app_name"
+                            android:layout_marginTop="@dimen/usual_margin"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/typo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="24sp"
+                            android:textAlignment="textEnd"
+                            android:gravity="end"
+                            android:textColor="?attr/colorOnSecondaryContainer"
+                            android:fontFamily="@font/pretendard_black"
+                            android:text="@string/app_name"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/imgLogo" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/version"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/versionName"
+                            android:textColor="?attr/colorPrimary"
+                            android:gravity="center_vertical"
+                            android:fontFamily="@font/pretendard"
+                            app:layout_constraintStart_toStartOf="@id/typo"
+                            app:layout_constraintEnd_toEndOf="@id/typo"
+                            app:layout_constraintTop_toBottomOf="@id/typo" />
+
+                        <ImageView
+                            android:id="@+id/ienlab_logo"
+                            android:layout_width="140dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/img_dev"
+                            android:adjustViewBounds="true"
+                            android:layout_marginTop="@dimen/usual_margin"
+                            android:layout_marginBottom="@dimen/usual_margin"
+                            android:contentDescription="@string/dev_ienlab"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/version"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/navigation_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:listitem="@layout/adapter_settings_category"
+                        tools:itemCount="3"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/toolbar"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </androidx.slidingpanelayout.widget.SlidingPaneLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

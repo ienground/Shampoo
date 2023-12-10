@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -21,7 +23,9 @@ import zone.ien.shampoo.databinding.FragmentDeviceAddGuideBinding
 import zone.ien.shampoo.databinding.FragmentDeviceAddInfoBinding
 import zone.ien.shampoo.databinding.FragmentMainDashboardBinding
 import zone.ien.shampoo.room.DeviceDao
+import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.utils.Dlog
+import zone.ien.shampoo.utils.MyUtils
 import java.io.InputStreamReader
 
 class DeviceAddInfoFragment : Fragment() {
@@ -35,9 +39,6 @@ class DeviceAddInfoFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_device_add_info, container, false)
 
-//        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = null
-
         return binding.root
     }
 
@@ -48,6 +49,8 @@ class DeviceAddInfoFragment : Fragment() {
         val inputStream = assetManager.open("bubble_datasheet.csv")
         val csvReader = CSVReader(InputStreamReader(inputStream, "EUC-KR"))
         productList.addAll(csvReader.readAll())
+
+        binding.imgPreview.clipToOutline = true
     }
 
     fun setCallbackListener(callbackListener: DeviceAddActivityCallback?) {
@@ -57,21 +60,25 @@ class DeviceAddInfoFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Dlog.d(TAG, "onResume ${DeviceAddActivity.deviceBarcode} ${DeviceAddActivity.deviceAddress}")
-        val product = productList.find { it[0].replace(" ", "") == DeviceAddActivity.deviceBarcode }
+        val product = productList.find { it[1].replace(" ", "") == DeviceAddActivity.deviceBarcode }
         callbackListener?.setButtonEnabled(isPrev = true, isEnabled = false)
         callbackListener?.setButtonEnabled(isPrev = false, isEnabled = true)
+        callbackListener?.setTitle(R.string.check_product_info)
 
         product?.let {
-            DeviceAddActivity.deviceProduct = it[1]
-            DeviceAddActivity.deviceType = it[2].toInt()
-            DeviceAddActivity.deviceMax = it[3].toInt()
-            binding.tvContentType.text = it[1]
-            binding.tvContentCapacity.text = it[3]
+            DeviceAddActivity.deviceProduct = it[2]
+            DeviceAddActivity.deviceType = it[3].toInt()
+            DeviceAddActivity.deviceModel = it[0].toInt()
+            DeviceAddActivity.deviceMax = it[4].toInt()
+            binding.tvContentModel.text = it[2]
+            binding.tvContentType.text = DeviceEntity.getTypeString(requireContext(), it[3].toInt())
+            binding.tvContentMax.text = "${it[4]}ml"
+            binding.tvContentModel.isSelected = true
 
-            if (it[6] != "") {
-                Dlog.d(TAG, "link: ${it[6]}")
+            if (it[7] != "") {
+                Dlog.d(TAG, "link: ${it[7]}")
                 Glide.with(this)
-                    .load(it[6])
+                    .load(it[7])
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.ic_error)
                     .into(binding.imgPreview)

@@ -1,7 +1,10 @@
 package zone.ien.shampoo.fragment
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,8 +15,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.iterator
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import com.journeyapps.barcodescanner.ScanContract
@@ -27,15 +32,18 @@ import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DetailActivity
 import zone.ien.shampoo.activity.DeviceAddActivity
 import zone.ien.shampoo.activity.NotificationsActivity
+import zone.ien.shampoo.activity.SettingsActivity
 import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.adapter.DashboardAdapter
 import zone.ien.shampoo.callback.DashboardCallback
 import zone.ien.shampoo.constant.IntentKey
+import zone.ien.shampoo.constant.IntentValue
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.FragmentMainDashboardBinding
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceLogDatabase
 import zone.ien.shampoo.utils.Dlog
+import zone.ien.shampoo.utils.MyUtils
 import java.util.Calendar
 
 class MainDashboardFragment : Fragment() {
@@ -46,9 +54,12 @@ class MainDashboardFragment : Fragment() {
     private var deviceDatabase: DeviceDatabase? = null
     private var deviceLogDatabase: DeviceLogDatabase? = null
 
+    lateinit var deviceAddActivityLauncher: ActivityResultLauncher<Intent>
+    lateinit var detailActivityLauncher: ActivityResultLauncher<Intent>
+
     private var dashboardCallback = object: DashboardCallback {
         override fun callback(position: Int, id: Long) {
-            startActivity(Intent(requireContext(), DetailActivity::class.java).apply {
+            detailActivityLauncher.launch(Intent(requireContext(), DetailActivity::class.java).apply {
                 putExtra(IntentKey.DATA_ID, id)
             })
         }
@@ -70,16 +81,23 @@ class MainDashboardFragment : Fragment() {
         requireActivity().addMenuProvider(object: MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_main, menu)
+                for (menuItem in menu.iterator()) {
+                    menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_add -> {
-                        startActivity(Intent(requireContext(), DeviceAddActivity::class.java))
+                        deviceAddActivityLauncher.launch(Intent(requireContext(), DeviceAddActivity::class.java))
                         true
                     }
                     R.id.menu_notifications -> {
                         startActivity(Intent(requireContext(), NotificationsActivity::class.java))
+                        true
+                    }
+                    R.id.menu_settings -> {
+                        startActivity(Intent(requireContext(), SettingsActivity::class.java))
                         true
                     }
                     else -> false
@@ -125,6 +143,40 @@ class MainDashboardFragment : Fragment() {
             }
         }
 
+        deviceAddActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val id = result.data?.getLongExtra(IntentKey.DATA_ID, -1) ?: -1
+                if (id != -1L) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val entity = deviceDatabase?.getDao()?.get(id)
+
+                        withContext(Dispatchers.Main) {
+                            entity?.let {
+                                (binding.list.adapter as DashboardAdapter).add(it)
+                                binding.icNoDevices.visibility = if (binding.list.adapter?.itemCount == 0) View.VISIBLE else View.GONE
+                                binding.tvNoDevices.visibility = if (binding.list.adapter?.itemCount == 0) View.VISIBLE else View.GONE
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        detailActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val id = result.data?.getLongExtra(IntentKey.DATA_ID, -1) ?: -1
+                val actionType = result.data?.getIntExtra(IntentKey.ACTION_TYPE, -1) ?: -1
+                if (id != -1L) {
+                    when (actionType) {
+                        IntentValue.ACTION_DELETE -> {
+                            (binding.list.adapter as DashboardAdapter).delete(id)
+                            binding.icNoDevices.visibility = if (binding.list.adapter?.itemCount == 0) View.VISIBLE else View.GONE
+                            binding.tvNoDevices.visibility = if (binding.list.adapter?.itemCount == 0) View.VISIBLE else View.GONE
+                        }
+                    }
+                }
+            }
+        }
 
 //        val adapter = DashboardAdapter(list)
 //        binding.list.adapter = adapter

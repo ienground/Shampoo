@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="auto"
+            app:tabMaxWidth="80dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_smile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smile" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_animal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Animal" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_food"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Food" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Activity" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_travel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Travel" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_object"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Object" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Symbol" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flag" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="@dimen/usual_margin_half"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/adapter_emoji_more"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -16,7 +16,7 @@ abstract class NotificationsDatabase: RoomDatabase() {
         fun getInstance(context: Context): NotificationsDatabase? {
             if (instance == null) {
                 synchronized(NotificationsDatabase::class) {
-                    instance = Room.databaseBuilder(context.applicationContext, NotificationsDatabase::class.java, "NotificationDatabase.db")
+                    instance = Room.databaseBuilder(context.applicationContext, NotificationsDatabase::class.java, "NotificationsDatabase.db")
                         .build()
                 }
             }

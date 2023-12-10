@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="entity"
+            type="zone.ien.shampoo.room.PlaceEntity" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/usual_margin"
+        android:layout_marginBottom="@dimen/usual_margin"
+        style="@style/Widget.Material3.CardView.Elevated">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/usual_margin">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="@{entity.icon}"
+                tools:text="H"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:background="@drawable/rounded_corners"
+                android:backgroundTint="?attr/colorSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{entity.title}"
+                tools:text="Title"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="24sp"
+                android:layout_marginHorizontal="@dimen/usual_margin"
+                app:layout_constraintStart_toEndOf="@id/tv_icon"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_edit"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:layout_marginEnd="@dimen/usual_margin"
+                app:icon="@drawable/ic_edit"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnSecondary"
+                app:backgroundTint="?attr/colorPrimary"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                app:icon="@drawable/ic_delete"
+                app:iconPadding="0dp"
+                app:iconGravity="textStart"
+                app:iconSize="24dp"
+                app:iconTint="?attr/colorOnError"
+                app:backgroundTint="?attr/colorError"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

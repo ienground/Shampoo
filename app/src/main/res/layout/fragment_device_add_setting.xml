@@ -6,6 +6,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/img_preview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_launcher_background"
+            android:background="@drawable/rounded_corners"
+            android:layout_margin="@dimen/usual_margin"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_name"
@@ -13,10 +24,10 @@
             android:layout_height="wrap_content"
             style="@style/Widget.Material3.TextInputLayout.FilledBox"
             android:hint="@string/name"
-            android:layout_marginTop="@dimen/usual_margin"
+            android:layout_margin="@dimen/usual_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/img_preview" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -31,17 +42,134 @@
             android:layout_height="wrap_content"
             style="@style/Widget.Material3.TextInputLayout.FilledBox"
             android:hint="@string/room"
-            android:layout_marginTop="@dimen/usual_margin"
+            android:layout_margin="@dimen/usual_margin"
+            app:endIconMode="dropdown_menu"
+            app:endIconDrawable="@drawable/ic_arrow_drop_down"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/input_name">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/auto_room"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal"/>
+                android:inputType="none"
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/usual_margin"
+            style="@style/Widget.Material3.CardView.Elevated"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input_room">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/usual_margin">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_title_model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/model"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_content_model"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/shampoo"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textAlignment="textEnd"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:layout_marginStart="@dimen/usual_margin"
+                    app:layout_constraintStart_toEndOf="@id/tv_title_model"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_title_model" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_title_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/type"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_model"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_content_type"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/shampoo"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textAlignment="textEnd"
+                    android:layout_marginStart="@dimen/usual_margin"
+                    app:layout_constraintStart_toEndOf="@id/tv_title_type"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_title_type" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_title_max"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/full_capacity"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_type" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_content_max"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="500ml"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textAlignment="textEnd"
+                    android:layout_marginStart="@dimen/usual_margin"
+                    app:layout_constraintStart_toEndOf="@id/tv_title_max"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_title_max" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_title_capacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_capacity"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textStyle="bold"
+                    android:layout_marginTop="@dimen/usual_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_max" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_content_capacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="500ml"
+                    android:textColor="?attr/colorOnSecondaryContainer"
+                    android:textAlignment="textEnd"
+                    android:layout_marginStart="@dimen/usual_margin"
+                    app:layout_constraintStart_toEndOf="@id/tv_title_capacity"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_title_capacity" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

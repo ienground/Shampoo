@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:title="@string/use_dynamic_colors"
+        app:key="is_material_you"
+        app:icon="@drawable/ic_palette"
+        app:defaultValue="true"
+        app:summaryOn="@string/use_dynamic_colors_sum_on"
+        app:summaryOff="@string/use_dynamic_colors_sum_off"
+        app:widgetLayout="@layout/preference_material_switch" />
+
+</PreferenceScreen>

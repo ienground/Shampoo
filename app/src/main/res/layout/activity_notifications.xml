@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="~"
+            android:textColor="?attr/colorOnSecondaryContainer"
             app:layout_constraintStart_toEndOf="@id/tv_start_date"
             app:layout_constraintEnd_toStartOf="@id/tv_end_date"
             app:layout_constraintTop_toTopOf="@id/tv_start_date"

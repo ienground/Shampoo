@@ -2,15 +2,18 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <ImageView
             android:id="@+id/img_guide"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:src="@drawable/ic_launcher_background"
+            android:background="@drawable/rounded_corners"
             android:layout_margin="@dimen/usual_margin"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
+            app:indicatorColor="?attr/colorOnSecondaryContainer"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -30,10 +34,13 @@
 
         <ImageView
             android:id="@+id/ic_check"
-            android:layout_width="wrap_content"
+            android:layout_width="36dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_check"
+            android:src="@drawable/ic_check_circle"
+            android:adjustViewBounds="true"
             android:visibility="gone"
+            tools:visibility="visible"
+            app:tint="?attr/colorOnSecondaryContainer"
             app:layout_constraintStart_toStartOf="@id/progress"
             app:layout_constraintEnd_toEndOf="@id/progress"
             app:layout_constraintTop_toTopOf="@id/progress"
@@ -72,9 +79,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/measure_again"
+            android:textColor="@drawable/color_state_button_text"
             android:enabled="false"
             android:layout_marginBottom="@dimen/usual_margin"
             app:icon="@drawable/ic_renew"
+            app:iconTint="@drawable/color_state_button_text"
+            app:backgroundTint="@drawable/color_state_button"
+            app:rippleColor="@drawable/color_state_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />

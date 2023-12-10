@@ -56,6 +56,21 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
         this.callbackListener = callbackListener
     }
 
+    fun add(entity: DeviceEntity) {
+        items.add(entity)
+        notifyItemInserted(items.lastIndex)
+//        items.sortBy { it.room }
+    }
+
+    fun delete(id: Long) {
+        val index = items.indexOfFirst { it.id == id }
+        if (index != -1) {
+            items.removeAt(index)
+            notifyItemRemoved(index)
+        }
+
+    }
+
     inner class ItemViewHolder(val binding: AdapterDashboardBinding): RecyclerView.ViewHolder(binding.root) {
 
     }

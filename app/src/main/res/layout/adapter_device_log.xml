@@ -4,20 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/usual_margin">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_time"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="time" />
+            tools:text="오후 4:33"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:layout_marginStart="@dimen/usual_margin"
+            app:layout_constraintWidth_percent="0.2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_value"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="value"
-            app:layout_constraintStart_toEndOf="@id/tv_time" />
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textAlignment="textEnd"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/tv_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

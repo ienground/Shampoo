@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/usual_margin"
+        android:fadingEdge="vertical"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="@dimen/usual_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_nearby_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                app:checkedIcon="@null"
+                app:cardCornerRadius="@dimen/cardview_radius"
+                style="@style/Widget.Material3.CardView.Filled">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/usual_margin">
+
+                    <ImageView
+                        android:id="@+id/ic_nearby_devices"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_devices_other"
+                        android:contentDescription="@string/nearby_devices"
+                        app:tint="?attr/colorOnSecondaryContainer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_nearby_devices"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nearby_devices"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/pretendard"
+                        android:layout_marginStart="@dimen/usual_margin"
+                        app:layout_constraintStart_toEndOf="@id/ic_nearby_devices"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_nearby_devices_sub"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nearby_devices_exp"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:fontFamily="@font/pretendard"
+                        app:layout_constraintStart_toStartOf="@id/tv_nearby_devices"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_nearby_devices"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_post_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:layout_marginTop="@dimen/usual_margin"
+                app:checkedIcon="@null"
+                app:cardCornerRadius="@dimen/cardview_radius"
+                style="@style/Widget.Material3.CardView.Filled">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/usual_margin">
+
+                    <ImageView
+                        android:id="@+id/ic_post_notification"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_notifications"
+                        android:contentDescription="@string/post_notification"
+                        app:tint="?attr/colorOnSecondaryContainer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_post_notification"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/post_notification"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/pretendard"
+                        android:layout_marginStart="@dimen/usual_margin"
+                        app:layout_constraintStart_toEndOf="@id/ic_post_notification"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_post_notification_sub"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/post_notification_exp"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:fontFamily="@font/pretendard"
+                        app:layout_constraintStart_toStartOf="@id/tv_post_notification"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_post_notification"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:layout_marginTop="@dimen/usual_margin"
+                app:checkedIcon="@null"
+                app:cardCornerRadius="@dimen/cardview_radius"
+                style="@style/Widget.Material3.CardView.Filled">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/usual_margin">
+
+                    <ImageView
+                        android:id="@+id/ic_location"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_location"
+                        android:contentDescription="@string/location"
+                        app:tint="?attr/colorOnSecondaryContainer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_location"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/pretendard"
+                        android:layout_marginStart="@dimen/usual_margin"
+                        app:layout_constraintStart_toEndOf="@id/ic_location"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_location_sub"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location_exp"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textAlignment="textStart"
+                        android:fontFamily="@font/pretendard"
+                        app:layout_constraintStart_toStartOf="@id/tv_location"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_location"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

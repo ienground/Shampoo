@@ -33,4 +33,14 @@
         <item name="android:tint">?attr/colorOnSecondaryContainer</item>
     </style>
 
+    <style name="Theme.Shampoo.MaterialButtonNoInset" parent="Theme.Shampoo">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textEnd</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>
