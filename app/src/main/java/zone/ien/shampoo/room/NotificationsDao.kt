@@ -8,7 +8,7 @@ import androidx.room.Update
 
 @Dao
 interface NotificationsDao {
-    @Query("SELECT * FROM NotificationsDatabase")
+    @Query("SELECT * FROM NotificationsDatabase WHERE deviceId <> -1")
     fun getAll(): List<NotificationsEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -23,7 +23,7 @@ interface NotificationsDao {
     @Query("SELECT * FROM NotificationsDatabase WHERE deviceId = :deviceId")
     fun getByDeviceId(deviceId: Long): List<NotificationsEntity>
 
-    @Query("SELECT * FROM NotificationsDatabase WHERE (deviceId = :deviceId AND timestamp >= :startTime AND timestamp <= :endTime)")
+    @Query("SELECT * FROM NotificationsDatabase WHERE (deviceId = :deviceId AND timestamp >= :startTime AND timestamp < :endTime)")
     fun getByDeviceId(deviceId: Long, startTime: Long, endTime: Long): List<NotificationsEntity>
 
     @Query("DELETE FROM NotificationsDatabase WHERE deviceId = :deviceId")

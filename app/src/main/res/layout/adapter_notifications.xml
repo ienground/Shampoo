@@ -27,12 +27,13 @@
             android:id="@+id/tv_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="yyyy.MM.dd hh:mm:ss"
+            tools:text="h:mm"
             android:textColor="?attr/colorOnSecondaryContainer"
             android:layout_marginStart="@dimen/usual_margin"
-            app:layout_constraintStart_toEndOf="@id/ic_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_title"
@@ -41,10 +42,23 @@
             tools:text="Title"
             android:textSize="18sp"
             android:textColor="?attr/colorOnSecondaryContainer"
-            android:layout_marginStart="@dimen/usual_margin"
+            android:layout_marginHorizontal="@dimen/usual_margin"
             app:layout_constraintStart_toEndOf="@id/ic_icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_date"
+            app:layout_constraintEnd_toStartOf="@id/tv_date"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_content"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="content"
+            android:textSize="12sp"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/ic_icon"
+            app:layout_constraintEnd_toStartOf="@id/tv_date"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

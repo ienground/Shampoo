@@ -23,6 +23,9 @@ interface DeviceDao {
     @Query("SELECT * FROM DeviceDatabase WHERE address = :address")
     fun get(address: String): DeviceEntity
 
+    @Query("SELECT * FROM DeviceDatabase WHERE room = :placeId")
+    fun getByPlace(placeId: Long): List<DeviceEntity>
+
     @Query("DELETE FROM DeviceDatabase WHERE id = :id")
     fun delete(id: Long)
 

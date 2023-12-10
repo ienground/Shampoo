@@ -129,8 +129,8 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
 
             context?.let { context ->
                 val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                nm.createNotificationChannel(NotificationChannel(ChannelID.BATTERY_LOW_ID, context.getString(R.string.battery_warning) ?: "", NotificationManager.IMPORTANCE_DEFAULT))
-                nm.createNotificationChannel(NotificationChannel(ChannelID.LIQUID_LOW_ID, context.getString(R.string.liquid_warning) ?: "", NotificationManager.IMPORTANCE_DEFAULT))
+                nm.createNotificationChannel(NotificationChannel(ChannelID.BATTERY_LOW_ID, context.getString(R.string.battery_warning), NotificationManager.IMPORTANCE_DEFAULT))
+                nm.createNotificationChannel(NotificationChannel(ChannelID.LIQUID_LOW_ID, context.getString(R.string.liquid_warning), NotificationManager.IMPORTANCE_DEFAULT))
 
                 context.sendBroadcast(Intent(IntentID.CALLBACK_DEVICE_VALUE).apply {
                     putExtra(IntentKey.MESSAGE_TYPE, type)
@@ -148,7 +148,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                                     entity.battery = value
                                     val title = context.getString(R.string.battery_low_title, device?.title)
                                     val content = context.getString(R.string.battery_low_content, value)
-                                    val notiEntity = NotificationsEntity(MessageType.TYPE_BATTERY_LOW, System.currentTimeMillis(), title, content, entity.id ?: -1)
+                                    val notiEntity = NotificationsEntity(MessageType.TYPE_BATTERY_LOW, System.currentTimeMillis(), title, content, entity.parentId)
                                     notificationsDatabase?.getDao()?.add(notiEntity)
 
                                     NotificationCompat.Builder(context, ChannelID.BATTERY_LOW_ID).apply {
@@ -166,7 +166,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                                     entity.capacity = value
                                     val title = context.getString(R.string.liquid_low_title, device?.title)
                                     val content = context.getString(R.string.liquid_low_content, value)
-                                    val notiEntity = NotificationsEntity(MessageType.TYPE_LEVEL_LOW, System.currentTimeMillis(), title, content, entity.id ?: -1)
+                                    val notiEntity = NotificationsEntity(MessageType.TYPE_LEVEL_LOW, System.currentTimeMillis(), title, content, entity.parentId)
                                     notificationsDatabase?.getDao()?.add(notiEntity)
 
                                     NotificationCompat.Builder(context, ChannelID.LIQUID_LOW_ID).apply {

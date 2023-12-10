@@ -3,6 +3,7 @@ package zone.ien.shampoo.activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.location.Geocoder
 import android.media.AudioManager
 import android.os.Build
@@ -16,10 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.iterator
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -28,12 +31,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.google.android.gms .oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import zone.ien.shampoo.BuildConfig
 import zone.ien.shampoo.R
 import zone.ien.shampoo.adapter.EmojiMoreAdapter
@@ -52,6 +52,7 @@ import zone.ien.shampoo.databinding.DialogEmojiMoreBinding
 import zone.ien.shampoo.databinding.DialogInputBinding
 import zone.ien.shampoo.databinding.FragmentPlaceBinding
 import zone.ien.shampoo.databinding.FragmentPlaceBindingImpl
+import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.PlaceDatabase
 import zone.ien.shampoo.room.PlaceEntity
 import zone.ien.shampoo.utils.MyUtils
@@ -431,6 +432,7 @@ class SettingsActivity : AppCompatActivity() {
 
         lateinit var binding: FragmentPlaceBinding
         private var placeDatabase: PlaceDatabase? = null
+        private var deviceDatabase: DeviceDatabase? = null
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             binding = DataBindingUtil.inflate(inflater, R.layout.fragment_place, container, false)
@@ -440,7 +442,94 @@ class SettingsActivity : AppCompatActivity() {
         @OptIn(DelicateCoroutinesApi::class)
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+
             placeDatabase = PlaceDatabase.getInstance(requireContext())
+            deviceDatabase = DeviceDatabase.getInstance(requireContext())
+
+            requireActivity().addMenuProvider(object: MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_add, menu)
+                    for (menuItem in menu.iterator()) {
+                        menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
+                    }
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.menu_add -> {
+                            val dialogBinding: DialogInputBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_input, null, false)
+                            val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
+                                dialogBinding.inputLayout.hint = context.getString(R.string.new_place)
+                                dialogBinding.tvEmojiPreview.text = "🛁"
+
+                                setPositiveButton(android.R.string.ok) { dialog, id -> }
+                                setNegativeButton(android.R.string.cancel) { dialog, id -> }
+
+                                setView(dialogBinding.root)
+                            }.create()
+
+                            dialogBinding.tvEmojiPreview.setOnClickListener {
+                                var dialog2: AlertDialog? = null
+                                val callbackListener = object: EmojiClickCallback {
+                                    override fun click(emoji: String) {
+                                        dialogBinding.tvEmojiPreview.text = emoji
+                                        dialog2?.dismiss()
+                                    }
+                                }
+                                dialog2 = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
+                                    val emojiBinding: DialogEmojiMoreBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_emoji_more, LinearLayout(requireContext()), false)
+                                    for (i in 0 until emojiBinding.tabLayout.tabCount) emojiBinding.tabLayout.getTabAt(i)?.text = MyUtils.emoji_labels[i]
+
+                                    val gridLayoutManager = GridLayoutManager(requireContext(), MyUtils.calculateNoOfColumns(requireContext(), 48f))
+                                    emojiBinding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                        override fun onTabSelected(tab: TabLayout.Tab) {
+                                            emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[tab.position]).apply {
+                                                setCallbackListener(callbackListener)
+                                            }
+                                        }
+                                        override fun onTabReselected(tab: TabLayout.Tab) {}
+                                        override fun onTabUnselected(tab: TabLayout.Tab) {}
+                                    })
+                                    emojiBinding.list.layoutManager = gridLayoutManager
+                                    emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[0]).apply {
+                                        setCallbackListener(callbackListener)
+                                    }
+                                    emojiBinding.tabLayout.selectTab(emojiBinding.tabLayout.getTabAt(0))
+
+                                    setNegativeButton(android.R.string.cancel) { _, _ -> }
+
+                                    setView(emojiBinding.root)
+                                }.create()
+                                dialog2.show()
+                            }
+
+                            dialog.show()
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                                val title = dialogBinding.inputLayout.editText?.text?.toString() ?: ""
+                                val icon = dialogBinding.tvEmojiPreview.text.toString()
+                                if (title != "") {
+                                    val entity = PlaceEntity(icon, title)
+                                    GlobalScope.launch(Dispatchers.IO) {
+                                        val id = placeDatabase?.getDao()?.add(entity)
+                                        entity.id = id
+                                        withContext(Dispatchers.Main) {
+                                            ((binding.root as RecyclerView).adapter as PlaceAdapter).add(entity)
+                                            dialog.dismiss()
+                                        }
+                                    }
+                                } else {
+                                    dialog.window?.decorView?.animate()?.translationX(16f)?.interpolator = CycleInterpolator(7f)
+                                    dialogBinding.inputLayout.error = getString(R.string.fill_out_the_title)
+                                }
+                            }
+                            true
+                        }
+                        else -> {
+                            false
+                        }
+                    }
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
             val placeCallback = object: PlaceCallback {
                 override fun edit(position: Int, entity: PlaceEntity) {
@@ -488,7 +577,7 @@ class SettingsActivity : AppCompatActivity() {
 
                             setView(emojiBinding.root)
                         }.create()
-                        dialog2.show()
+                        dialog2?.show()
                     }
 
                     dialog.show()
@@ -511,18 +600,29 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 override fun delete(position: Int, id: Long) {
-                    MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
-                        setIcon(R.drawable.ic_delete)
-                        setTitle(R.string.delete_title)
-                        setMessage(R.string.delete_content)
-                        setPositiveButton(android.R.string.ok) { dialog, _ ->
-                            GlobalScope.launch(Dispatchers.IO) {
-                                placeDatabase?.getDao()?.delete(id)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val entities = deviceDatabase?.getDao()?.getByPlace(id)
+                        withContext(Dispatchers.Main) {
+                            if (entities?.isEmpty() == true) {
+                                MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
+                                    setIcon(R.drawable.ic_delete)
+                                    setTitle(R.string.delete_title)
+                                    setMessage(R.string.delete_content)
+                                    setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        GlobalScope.launch(Dispatchers.IO) {
+                                            placeDatabase?.getDao()?.delete(id)
+                                        }
+                                        ((binding.root as RecyclerView).adapter as PlaceAdapter).delete(id)
+                                    }
+                                    setNegativeButton(android.R.string.cancel) { dialog, _ -> }
+                                }.show()
+                            } else {
+                                Snackbar.make(view, getString(R.string.cannot_delete_place), Snackbar.LENGTH_SHORT).show()
                             }
-                            ((binding.root as RecyclerView).adapter as PlaceAdapter).delete(id)
                         }
-                        setNegativeButton(android.R.string.cancel) { dialog, _ -> }
-                    }.show()
+                    }
+
+
                 }
             }
 
@@ -589,7 +689,7 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
             prefOpensource?.setOnPreferenceClickListener {
-                startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+                startActivity(Intent(requireContext(), com.google.android.gms.oss.licenses.OssLicensesMenuActivity::class.java))
                 true
             }
         }

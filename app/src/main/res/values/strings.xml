@@ -78,4 +78,7 @@
     <string name="monthDateFormat">M/d</string>
     <string name="timeFormat">a H:mm</string>
     <string name="dateFormat">yyyy-MM-dd</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
+    <string name="cannot_delete_place">방에 장치가 있어 삭제할 수 없습니다.</string>
 </resources>

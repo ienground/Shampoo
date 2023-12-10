@@ -7,8 +7,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import zone.ien.shampoo.R
 import zone.ien.shampoo.constant.MessageType
+import zone.ien.shampoo.databinding.AdapterDateHeaderBinding
 import zone.ien.shampoo.databinding.AdapterDeviceLogBinding
-import zone.ien.shampoo.databinding.AdapterDeviceLogHeaderBinding
 import zone.ien.shampoo.room.DeviceLogEntity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -23,7 +23,7 @@ class DeviceLogAdapter(var items: ArrayList<DeviceLogEntity>, var type: Int): Re
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         context = parent.context
         val binding: AdapterDeviceLogBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.adapter_device_log, parent, false)
-        val headerBinding: AdapterDeviceLogHeaderBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.adapter_device_log_header, parent, false)
+        val headerBinding: AdapterDateHeaderBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.adapter_date_header, parent, false)
 
         timeFormat = SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault())
         dateFormat = SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault())
@@ -51,7 +51,7 @@ class DeviceLogAdapter(var items: ArrayList<DeviceLogEntity>, var type: Int): Re
     }
 
     inner class ItemViewHolder(val binding: AdapterDeviceLogBinding): RecyclerView.ViewHolder(binding.root)
-    inner class HeaderViewHolder(val binding: AdapterDeviceLogHeaderBinding): RecyclerView.ViewHolder(binding.root)
+    inner class HeaderViewHolder(val binding: AdapterDateHeaderBinding): RecyclerView.ViewHolder(binding.root)
 
     companion object {
         const val CELL_TYPE_HEADER = 0
