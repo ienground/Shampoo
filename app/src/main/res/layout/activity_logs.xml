@@ -8,5 +8,135 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/tv_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2023-12-01"
+            android:layout_marginStart="@dimen/usual_margin"
+            app:layout_constraintWidth_percent="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/btn_search"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="~"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            app:layout_constraintStart_toEndOf="@id/tv_start_date"
+            app:layout_constraintEnd_toStartOf="@id/tv_end_date"
+            app:layout_constraintTop_toTopOf="@id/tv_start_date"
+            app:layout_constraintBottom_toBottomOf="@id/tv_start_date" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/tv_end_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2023-12-01"
+            android:layout_marginEnd="@dimen/usual_margin"
+            app:layout_constraintWidth_percent="0.3"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintTop_toTopOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/btn_search"/>
+
+        <ImageButton
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="?attr/colorSurfaceVariant"
+            android:foreground="@drawable/ripple_rounded"
+            android:padding="@dimen/usual_margin_half"
+            android:layout_marginEnd="@dimen/usual_margin"
+            android:layout_marginTop="@dimen/usual_margin"
+            app:icon="@drawable/ic_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <ImageView
+            android:id="@+id/ic_no_history"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:src="@drawable/ic_history_off"
+            android:alpha="0.4"
+            android:visibility="gone"
+            android:contentDescription="@string/no_histories"
+            app:tint="?attr/colorOnSecondaryContainer"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/list"
+            app:layout_constraintBottom_toTopOf="@id/tv_no_history" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_no_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_histories"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:fontFamily="@font/pretendard"
+            android:alpha="0.4"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ic_no_history"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/usual_margin"
+            tools:listitem="@layout/adapter_device_log"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_end_date"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_frame"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/list"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include layout="@layout/adapter_date_header_shimmer" android:id="@+id/shimmer_first"/>
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_date_header_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_date_header_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+                <include layout="@layout/adapter_device_log_shimmer" />
+
+            </LinearLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

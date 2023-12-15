@@ -2,7 +2,10 @@ package zone.ien.shampoo.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import zone.ien.shampoo.R
@@ -40,6 +43,9 @@ class DeviceLogAdapter(var items: ArrayList<DeviceLogEntity>, var type: Int): Re
                 else -> ""
             }.toString()
         } else if (holder is HeaderViewHolder) {
+            if (holder.bindingAdapterPosition == 0) {
+                holder.binding.divider.visibility = View.GONE
+            }
             holder.binding.tvDate.text = dateFormat.format(Date(items[holder.bindingAdapterPosition].timestamp))
         }
     }

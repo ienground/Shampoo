@@ -1,11 +1,15 @@
 package zone.ien.shampoo.activity
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.app.AlarmManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.annotation.StringRes
@@ -80,8 +84,9 @@ class NotificationsActivity : AppCompatActivity() {
 
         deviceDatabase = DeviceDatabase.getInstance(this)
         notificationsDatabase = NotificationsDatabase.getInstance(this)
-        dateFormat = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
+        dateFormat = SimpleDateFormat(getString(R.string.dateShortFormat), Locale.getDefault())
 
+        binding.shimmerFirst.divider.visibility = View.GONE
         binding.tvStartDate.text = dateFormat.format(startCalendar.time)
         binding.tvEndDate.text = dateFormat.format(endCalendar.time)
         binding.tvStartDate.setOnClickListener {
@@ -93,6 +98,29 @@ class NotificationsActivity : AppCompatActivity() {
             datePicker.show(supportFragmentManager, "END_DATE_PICKER")
         }
         binding.btnSearch.setOnClickListener {
+            binding.shimmerFrame.startShimmer()
+            binding.shimmerFrame.visibility = View.VISIBLE
+
+            ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 300
+                addUpdateListener {
+                    binding.list.alpha = 1f - it.animatedValue as Float
+                    binding.shimmerFrame.alpha = it.animatedValue as Float
+                    if (binding.icNoNotifications.visibility == View.VISIBLE) binding.icNoNotifications.alpha = (1f - it.animatedValue as Float) * 0.4f
+                    if (binding.tvNoNotifications.visibility == View.VISIBLE) binding.tvNoNotifications.alpha = (1f - it.animatedValue as Float) * 0.4f
+                }
+                addListener(object: AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        super.onAnimationStart(animation)
+                        binding.list.visibility = View.INVISIBLE
+                    }
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        binding.shimmerFrame.visibility = View.INVISIBLE
+                    }
+                })
+            }.start()
+
             GlobalScope.launch(Dispatchers.IO) {
                 val notifications = notificationsDatabase?.getDao()?.getByDeviceId(selectionDeviceId, startCalendar.timeZero().timeInMillis, endCalendar.timeZero().timeInMillis + AlarmManager.INTERVAL_DAY) as ArrayList
                 val items = ArrayList<NotificationsEntity>()
@@ -105,13 +133,14 @@ class NotificationsActivity : AppCompatActivity() {
                     items.add(item)
                 }
 
-                val adapter = NotificationsAdapter(items)
-
-                withContext(Dispatchers.Main) {
-                    binding.list.adapter = adapter
-                }
+                inflateData(items)
             }
         }
+
+        binding.shimmerFrame.startShimmer()
+        binding.shimmerFrame.visibility = View.VISIBLE
+        binding.list.visibility = View.INVISIBLE
+        binding.list.alpha = 0f
 
         GlobalScope.launch(Dispatchers.IO) {
             val data = deviceDatabase?.getDao()?.getAll()
@@ -123,7 +152,6 @@ class NotificationsActivity : AppCompatActivity() {
                 if (it.isNotEmpty()) {
                     selectionDeviceId = it[0].id ?: -1
                 }
-                Dlog.d(TAG, "$selectionDeviceId")
                 val notifications = notificationsDatabase?.getDao()?.getByDeviceId(selectionDeviceId, startCalendar.timeZero().timeInMillis, endCalendar.timeZero().timeInMillis + AlarmManager.INTERVAL_DAY) as ArrayList
                 val items = ArrayList<NotificationsEntity>()
                 var date = -1L
@@ -135,28 +163,58 @@ class NotificationsActivity : AppCompatActivity() {
                     items.add(item)
                 }
 
-                val adapter = NotificationsAdapter(items)
-
                 withContext(Dispatchers.Main) {
-                    binding.list.adapter = adapter
-                }
-
-                withContext(Dispatchers.Main) {
-                    binding.list.adapter = adapter
                     val arrayAdapter = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_dropdown_item, maps.map { it.value.second })
                     binding.dropdownDeviceAuto.setAdapter(arrayAdapter)
                     binding.dropdownDeviceAuto.onItemClickListener = OnItemClickListener { parentView, selectedItemView, position, id ->
                         selectionDeviceId = maps.toList()[position].second.first
-                        Dlog.d(TAG, "adapter ${maps.keys.toList()[position]} $selectionDeviceId")
                     }
                     if (it.isNotEmpty()) {
                         binding.dropdownDeviceAuto.setText(it[0].title, false)
                     }
                 }
+
+                inflateData(items)
             }
         }
+    }
 
+    private suspend fun inflateData(items: ArrayList<NotificationsEntity>) {
+        val adapter = NotificationsAdapter(items)
 
+        withContext(Dispatchers.Main) {
+            binding.list.adapter = adapter
+            binding.shimmerFrame.stopShimmer()
+            ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 300
+                addUpdateListener {
+                    binding.list.alpha = it.animatedValue as Float
+                    binding.shimmerFrame.alpha = 1f - it.animatedValue as Float
+
+                    if (items.isEmpty()) {
+                        binding.icNoNotifications.alpha = (it.animatedValue as Float) * 0.4f
+                        binding.tvNoNotifications.alpha = (it.animatedValue as Float) * 0.4f
+                    }
+                }
+                addListener(object: AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        super.onAnimationStart(animation)
+                        binding.list.visibility = View.VISIBLE
+                        if (items.isEmpty()) {
+                            binding.icNoNotifications.visibility = View.VISIBLE
+                            binding.tvNoNotifications.visibility = View.VISIBLE
+                        } else {
+                            binding.icNoNotifications.visibility = View.GONE
+                            binding.tvNoNotifications.visibility = View.GONE
+                        }
+                    }
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        binding.shimmerFrame.visibility = View.INVISIBLE
+                    }
+                })
+            }.start()
+        }
     }
 
     private fun getDatePickerDialog(@StringRes title: Int, calendar: Calendar, chip: Chip): MaterialDatePicker<Long> {

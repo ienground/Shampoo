@@ -2,6 +2,7 @@ package zone.ien.shampoo.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,9 @@ class NotificationsAdapter(var items: ArrayList<NotificationsEntity>): RecyclerV
                 else -> R.drawable.ic_qmark
             })
         } else if (holder is DateItemViewHolder) {
+            if (holder.bindingAdapterPosition == 0) {
+                holder.binding.divider.visibility = View.GONE
+            }
             holder.binding.tvDate.text = dateFormat.format(Date(items[holder.bindingAdapterPosition].timestamp))
         }
     }

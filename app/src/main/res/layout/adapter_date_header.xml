@@ -11,9 +11,11 @@
             android:id="@+id/divider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/usual_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_date"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_date"
@@ -24,10 +26,9 @@
             android:textStyle="bold"
             android:textSize="24sp"
             android:layout_marginHorizontal="@dimen/usual_margin"
-            android:layout_marginTop="@dimen/usual_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

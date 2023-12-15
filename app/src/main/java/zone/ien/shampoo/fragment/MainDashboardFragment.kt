@@ -110,7 +110,7 @@ class MainDashboardFragment : Fragment() {
                         true
                     }
                     R.id.menu_notifications -> {
-                        startActivity(Intent(requireContext(), LogsActivity::class.java))
+                        startActivity(Intent(requireContext(), NotificationsActivity::class.java))
                         true
                     }
                     R.id.menu_settings -> {

@@ -19,10 +19,11 @@
             android:id="@+id/dropdown_device"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:hint="@string/select_device"
+            android:layout_marginHorizontal="@dimen/usual_margin"
             app:endIconDrawable="@drawable/ic_arrow_drop_down"
             app:endIconMode="dropdown_menu"
             style="@style/Widget.Material3.TextInputLayout.FilledBox"
-            android:layout_marginHorizontal="@dimen/usual_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -31,7 +32,8 @@
                 android:id="@+id/dropdown_device_auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="none" />
+                android:inputType="none"
+                style="@style/Widget.Material3.AutoCompleteTextView.FilledBox" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -82,6 +84,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dropdown_device" />
 
+        <ImageView
+            android:id="@+id/ic_no_notifications"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:src="@drawable/ic_notifications_off"
+            android:alpha="0.4"
+            android:visibility="gone"
+            android:contentDescription="@string/no_notifications"
+            app:tint="?attr/colorOnSecondaryContainer"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/list"
+            app:layout_constraintBottom_toTopOf="@id/tv_no_notifications" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_no_notifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_notifications"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:fontFamily="@font/pretendard"
+            android:alpha="0.4"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ic_no_notifications"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="0dp"
@@ -93,6 +125,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_end_date"
             app:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_frame"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/list"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include layout="@layout/adapter_date_header_shimmer" android:id="@+id/shimmer_first"/>
+                <include layout="@layout/adapter_notifications_shimmer" />
+                <include layout="@layout/adapter_notifications_shimmer" />
+                <include layout="@layout/adapter_date_header_shimmer" />
+                <include layout="@layout/adapter_notifications_shimmer" />
+                <include layout="@layout/adapter_notifications_shimmer" />
+
+            </LinearLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

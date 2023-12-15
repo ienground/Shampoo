@@ -9,10 +9,9 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_time"
-            android:layout_width="0dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            tools:text="오후 4:33"
-            android:fontFeatureSettings="tnum"
+            android:background="@drawable/shimmer_background"
             android:textColor="?attr/colorOnSecondaryContainer"
             android:layout_marginStart="@dimen/usual_margin"
             app:layout_constraintWidth_percent="0.2"
@@ -25,7 +24,7 @@
             android:id="@+id/tv_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="value"
+            android:background="@drawable/shimmer_background"
             android:textColor="?attr/colorOnSecondaryContainer"
             android:textAlignment="textEnd"
             android:layout_marginHorizontal="@dimen/usual_margin"

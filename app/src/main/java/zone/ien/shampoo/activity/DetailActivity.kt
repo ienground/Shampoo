@@ -57,9 +57,11 @@ import zone.ien.shampoo.utils.MyUtils
 import zone.ien.shampoo.utils.MyUtils.getBatteryDrawable
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Collections
 import java.util.Date
 import java.util.Locale
+import kotlin.math.floor
 
 class DetailActivity : AppCompatActivity() {
 
@@ -207,6 +209,42 @@ class DetailActivity : AppCompatActivity() {
         binding.tvProduct.isSelected = true
         binding.collapseToolbar.isTitleEnabled = true
 
+        binding.content.graphUsage.let {
+            val calendar = Calendar.getInstance()
+            if (calendar[Calendar.MINUTE] >= 0 && calendar[Calendar.SECOND] > 0) {
+                calendar[Calendar.HOUR]++
+            }
+            calendar[Calendar.MINUTE] = 0
+            calendar[Calendar.SECOND] = 0
+
+            it.isDragDecelerationEnabled = false
+            it.setPinchZoom(false)
+            it.xAxis.axisMaximum = calendar.timeInMillis / 1000f
+            it.xAxis.axisMinimum = (calendar.timeInMillis - AlarmManager.INTERVAL_DAY) / 1000f
+            it.xAxis.granularity = 6 * AlarmManager.INTERVAL_HOUR / 1000f
+            it.xAxis.isGranularityEnabled = true
+            it.xAxis.labelCount = 4
+            it.xAxis.valueFormatter = object: IndexAxisValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val timeFormat = SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault())
+                    val c = Calendar.getInstance().apply { timeInMillis = (value * 1000 / AlarmManager.INTERVAL_HOUR).toLong() * AlarmManager.INTERVAL_HOUR }
+
+                    return timeFormat.format(c.timeInMillis)
+                }
+            }
+            it.xAxis.textColor = getAttrColor(theme, Colors.colorOnSecondaryContainer)
+            it.legend.isEnabled = false
+            it.axisLeft.textColor = getAttrColor(theme, Colors.colorOnSecondaryContainer)
+            it.axisRight.isEnabled = false
+            it.description = null
+        }
+        binding.content.btnReadMore.setOnClickListener {
+            startActivity(Intent(applicationContext, LogsActivity::class.java).apply {
+                putExtra(IntentKey.DEVICE_ADDRESS, device?.address)
+                putExtra(IntentKey.LOG_TYPE, if (binding.content.tabs.selectedTabPosition == 0) MessageType.TYPE_LEVEL else MessageType.TYPE_BATTERY)
+            })
+        }
+
         id = intent.getLongExtra(IntentKey.DATA_ID, -1)
         if (id != -1L) {
             GlobalScope.launch(Dispatchers.IO) {
@@ -291,20 +329,6 @@ class DetailActivity : AppCompatActivity() {
                         binding.tvPlace.text = it.title
                     }
 
-                    binding.content.graphUsage.let {
-                        it.isDragDecelerationEnabled = false
-                        it.setPinchZoom(false)
-                        it.setScaleEnabled(false)
-                        it.xAxis.axisMaximum = System.currentTimeMillis() / 1000f
-                        it.xAxis.axisMinimum = (System.currentTimeMillis() - AlarmManager.INTERVAL_DAY) / 1000f
-                        it.xAxis.granularity = 6 * AlarmManager.INTERVAL_HOUR / 1000f
-                        it.xAxis.isGranularityEnabled = true
-                        it.xAxis.labelCount = 4
-                        it.legend.isEnabled = false
-                        it.axisRight.isEnabled = false
-                        it.xAxis.textColor = getAttrColor(theme, Colors.colorOnSecondaryContainer)
-//                        it.minOffset = 0f
-                    }
                     logs?.let { list ->
                         binding.content.tabs.getTabAt(1)?.select()
                         binding.content.tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
@@ -341,14 +365,7 @@ class DetailActivity : AppCompatActivity() {
                                 val dataSet = LineDataSet(entries, "Label")
                                 dataSet.color = getAttrColor(theme, Colors.colorPrimary)
                                 val lineData = LineData(dataSet)
-                                binding.content.graphUsage.xAxis.valueFormatter = object: IndexAxisValueFormatter() {
-                                    override fun getFormattedValue(value: Float): String {
-                                        val date = Date((value * 1000L).toLong())
-                                        val timeFormat = SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault())
 
-                                        return timeFormat.format(date)
-                                    }
-                                }
                                 binding.content.graphUsage.axisLeft.axisMinimum = 0f
                                 binding.content.graphUsage.data = lineData
                                 binding.content.graphUsage.invalidate()

@@ -6,6 +6,7 @@
     <string name="monthDateFormat">M/d</string>
     <string name="timeFormat">h:mm a</string>
     <string name="dateFormat">EEEE, MMM d</string>
+    <string name="dateShortFormat">E, M/d</string>
     <string name="notifications">Notifications</string>
     <string name="close">Close</string>
     <string name="edit">Edit</string>
@@ -102,5 +103,8 @@
     <string name="capacity_max_format">%1$dml 중</string>
     <string name="capacity_current_format">%1$dml 남음🧴</string>
     <string name="capacity_current_format_warning">%1$dml 남음🚨</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="select_device">Select device</string>
+    <string name="no_histories">No histories</string>
 
 </resources>

@@ -6,6 +6,7 @@
     <string name="monthDateFormat">M/d</string>
     <string name="timeFormat">a h:mm</string>
     <string name="dateFormat">M월 d일 E요일</string>
+    <string name="dateShortFormat">M/d E</string>
     <string name="notifications">Notifications</string>
     <string name="close">닫기</string>
     <string name="edit">수정</string>

@@ -100,6 +100,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:style="solid_line"
+                    app:progress_text_color="@android:color/transparent"
                     app:progress_start_color="?attr/colorOnSecondaryContainer"
                     app:progress_end_color="?attr/colorOnSecondaryContainer"
                     app:progress_stroke_width="16dp"
@@ -112,6 +113,8 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_warning"
+                    tools:visibility="visible"
+                    android:visibility="gone"
                     app:tint="?attr/colorOnSecondaryContainer"
                     app:layout_constraintStart_toStartOf="@id/progressBar"
                     app:layout_constraintEnd_toEndOf="@id/progressBar"
@@ -156,6 +159,31 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tabs" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tag_log"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/logs"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_margin="@dimen/usual_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_read_more"
+            app:layout_constraintTop_toBottomOf="@id/graph_usage" />
+
+        <ImageButton
+            android:id="@+id/btn_read_more"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_read_more"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="@dimen/usual_margin"
+            app:tint="?attr/colorOnSecondaryContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tag_log"
+            app:layout_constraintBottom_toBottomOf="@id/tag_log" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="0dp"
@@ -166,7 +194,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/graph_usage" />
+            app:layout_constraintTop_toBottomOf="@id/tag_log" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
