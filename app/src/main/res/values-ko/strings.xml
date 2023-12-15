@@ -1,0 +1,103 @@
+<resources>
+    <string name="app_name">버블</string>
+
+<!--    Overall Activity-->
+    <string name="add">추가</string>
+    <string name="monthDateFormat">M/d</string>
+    <string name="timeFormat">a h:mm</string>
+    <string name="dateFormat">M월 d일 E요일</string>
+    <string name="notifications">Notifications</string>
+    <string name="close">닫기</string>
+    <string name="edit">수정</string>
+    <string name="logs">기록</string>
+
+<!--    MainActivity-->
+    <string name="user_hello_morning">좋은 아침이에요☀️</string>
+    <string name="user_hello_afternoon">점심 맛있게 드세요🍽️</string>
+    <string name="user_hello_evening">행복한 저녁이에요🎆</string>
+    <string name="user_hello_night">오늘은 어떠셨나요?🌙</string>
+
+    <string name="dashboard">대시보드</string>
+    <string name="store">스토어</string>
+
+    <string name="post_notification">알림 보내기</string>
+    <string name="post_notification_exp">앱에서 타이머, 알람 등 각종 알림을 보냅니다.</string>
+    <string name="nearby_devices">주변 기기 접근</string>
+    <string name="nearby_devices_exp">블루투스 LE 기기에 접근합니다.</string>
+    <string name="location">위치 액세스</string>
+    <string name="location_exp">사용자 근처의 기기를 탐색합니다.</string>
+    <string name="permission_title">어플리케이션 이용을 위한 권한 정보 안내</string>
+    <string name="allowed">허용됨</string>
+
+<!--    MainDashboardFragment-->
+    <string name="no_devices">기기 없음</string>
+    <string name="add_new_device">새 기기 추가</string>
+
+<!--    DetailActivity-->
+    <string name="delete">삭제</string>
+    <string name="delete_title">삭제할까요?</string>
+    <string name="delete_content">정말로 삭제할까요?</string>
+
+<!--    Settings-->
+    <string name="select_start_date">시작 날짜 선택</string>
+    <string name="select_end_date">종료 날짜 선택</string>
+    <string name="cannot_delete_place">방에 장치가 있어 삭제할 수 없습니다.</string>
+    <string name="notifications_settings">알림 설정</string>
+    <string name="settings">설정</string>
+    <string name="dev_ienlab">Designed, Developed By ienlab\nInstagram : @ienlab</string>
+    <string name="settings_general">일반</string>
+    <string name="info_and_ask"><![CDATA[정보 & 문의]]></string>
+    <string name="location_setting">장소 설정</string>
+    <string name="use_dynamic_colors">동적 색상 사용</string>
+    <string name="use_dynamic_colors_sum_off">기본 색상을 앱 전반에 적용합니다.</string>
+    <string name="use_dynamic_colors_sum_on">동적 색상을 앱 전반에 적용합니다.</string>
+    <string name="update_log">업데이트 로그</string>
+    <string name="pref_changelog_exp">이번 버전에서 변경된 점을 살펴보세요.</string>
+    <string name="ask_to_dev">개발자에게 문의</string>
+    <string name="pref_ask_exp">버그나 궁금한 점은 이쪽으로 문의해주세요.</string>
+    <string name="ask">문의</string>
+    <string name="email_text">버블 사용자 커멘트</string>
+    <string name="open_source_license">오픈 소스 라이센스</string>
+    <string name="pref_opens_exp">어플리케이션에 사용된 오픈 소스의 라이센스</string>
+    <string name="shampoo_version">버블 버전</string>
+    <string name="place_settings">장소 설정</string>
+    <string name="fill_out_the_title">제목을 입력하세요</string>
+<!--    DeviceAddActivity-->
+    <string name="search">검색</string>
+    <string name="measuring">측정 중..</string>
+    <string name="measurement_completed">측정 완료</string>
+    <string name="measure_again">다시 측정하기</string>
+    <string name="check_product_info">제품 정보 확인</string>
+    <string name="measure_current_capacity">현재 용량 측정</string>
+    <string name="finish_setting">설정 완료하기</string>
+    <string name="cancel_title">취소할까요?</string>
+    <string name="cancel_content">취소하면 처음부터 다시 시작해야 합니다.</string>
+
+<!--    DeviceType-->
+    <string name="shampoo">샴푸</string>
+    <string name="conditioner">컨디셔너</string>
+    <string name="bodywash">바디워시</string>
+    <string name="cleansing">클렌징</string>
+    <string name="unknown">알 수 없음</string>
+
+<!--    DeviceInfo-->
+    <string name="room">장소</string>
+    <string name="type">종류</string>
+    <string name="capacity">용량</string>
+    <string name="current_capacity">현 용량</string>
+    <string name="full_capacity">전체 용량</string>
+    <string name="name">이름</string>
+    <string name="battery">배터리</string>
+    <string name="model">제품명</string>
+    <string name="add_new_place">새 장소 추가</string>
+    <string name="new_place">새 장소</string>
+
+<!--    Notifications-->
+    <string name="battery_warning">배터리 경고</string>
+    <string name="liquid_warning">남은 용량 경고</string>
+    <string name="battery_low_title">%1$s 배터리 부족</string>
+    <string name="battery_low_content">배터리가 현재 %1$d%%입니다.</string>
+    <string name="liquid_low_title">%1$s 용량 부족</string>
+    <string name="liquid_low_content">남은 용량이 현재 %1$dml입니다.</string>
+
+</resources>

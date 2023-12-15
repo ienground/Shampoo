@@ -20,6 +20,7 @@ data class DeviceEntity(
     @PrimaryKey(autoGenerate = true) var id: Long? = null
     @Ignore var battery: Int = 0
     @Ignore var lastConnectionTime: Long = 0L
+    @Ignore var isConnected = false
     @Ignore var logs: ArrayList<DeviceLogEntity> = arrayListOf()
     @Ignore var capacity: Int = 0
 

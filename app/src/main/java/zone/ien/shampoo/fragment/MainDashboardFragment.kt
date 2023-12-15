@@ -1,11 +1,19 @@
 package zone.ien.shampoo.fragment
 
+import android.Manifest
 import android.app.Activity
+import android.app.Activity.RECEIVER_EXPORTED
 import android.app.Activity.RESULT_OK
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -31,17 +39,23 @@ import kotlinx.coroutines.withContext
 import zone.ien.shampoo.R
 import zone.ien.shampoo.activity.DetailActivity
 import zone.ien.shampoo.activity.DeviceAddActivity
+import zone.ien.shampoo.activity.LogsActivity
 import zone.ien.shampoo.activity.NotificationsActivity
 import zone.ien.shampoo.activity.SettingsActivity
 import zone.ien.shampoo.activity.TAG
 import zone.ien.shampoo.adapter.DashboardAdapter
 import zone.ien.shampoo.callback.DashboardCallback
+import zone.ien.shampoo.constant.ActionID
+import zone.ien.shampoo.constant.IntentID
 import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.constant.IntentValue
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.FragmentMainDashboardBinding
+import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceLogDatabase
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
 import java.util.Calendar
@@ -65,6 +79,9 @@ class MainDashboardFragment : Fragment() {
         }
     }
 
+    private var bluetoothConnectReceiver: BroadcastReceiver? = null
+    private var bluetoothConnectStateReceiver: BroadcastReceiver? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main_dashboard, container, false)
 
@@ -82,7 +99,7 @@ class MainDashboardFragment : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_main, menu)
                 for (menuItem in menu.iterator()) {
-                    menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
+                    menuItem.iconTintList = ColorStateList.valueOf(getAttrColor(requireContext().theme, Colors.colorOnSecondaryContainer))
                 }
             }
 
@@ -93,7 +110,7 @@ class MainDashboardFragment : Fragment() {
                         true
                     }
                     R.id.menu_notifications -> {
-                        startActivity(Intent(requireContext(), NotificationsActivity::class.java))
+                        startActivity(Intent(requireContext(), LogsActivity::class.java))
                         true
                     }
                     R.id.menu_settings -> {
@@ -128,6 +145,9 @@ class MainDashboardFragment : Fragment() {
                     capacity?.let {
                         if (it.isNotEmpty()) entity.capacity = it[0].capacity
                     }
+                    requireContext().sendBroadcast(Intent(ActionID.ACTION_REQUEST_CONNECT_STATE).apply {
+                        putExtra(IntentKey.DEVICE_ADDRESS, entity.address)
+                    })
                 }
                 withContext(Dispatchers.Main) {
                     val adapter = DashboardAdapter(it).apply {
@@ -178,9 +198,56 @@ class MainDashboardFragment : Fragment() {
             }
         }
 
-//        val adapter = DashboardAdapter(list)
-//        binding.list.adapter = adapter
+        bluetoothConnectStateReceiver = object: BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
+                val isConnected = intent.getBooleanExtra(IntentKey.CONNECT_STATE, false) ?: false
 
+                (binding.list.adapter as DashboardAdapter).updateConnectionState(address, isConnected)
+            }
+        }
+        bluetoothConnectReceiver = object: BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
+
+                when (intent.action) {
+                    BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                        } else {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice?
+                        }
+                        Dlog.d(TAG, "ACTION_ACL_CONNECTED ${device?.name}")
+                        (binding.list.adapter as DashboardAdapter).updateConnectionState(device?.address ?: "", true)
+                    }
+
+                    BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                        } else {
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice?
+                        }
+                        Dlog.d(TAG, "ACTION_ACL_DISCONNECTED ${device?.name}")
+                        (binding.list.adapter as DashboardAdapter).updateConnectionState(device?.address ?: "", false)
+                    }
+                }
+            }
+        }
+        val intentFilter = IntentFilter()
+        intentFilter.let {
+            it.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            it.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+            it.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            it.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(bluetoothConnectReceiver, intentFilter, RECEIVER_EXPORTED)
+            requireContext().registerReceiver(bluetoothConnectStateReceiver, IntentFilter(IntentID.ACTION_RESPONSE_CONNECT_STATE), RECEIVER_EXPORTED)
+        } else {
+            requireContext().registerReceiver(bluetoothConnectReceiver, intentFilter)
+            requireContext().registerReceiver(bluetoothConnectStateReceiver, IntentFilter(IntentID.ACTION_RESPONSE_CONNECT_STATE))
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -195,6 +262,8 @@ class MainDashboardFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mListener = null
+        requireContext().unregisterReceiver(bluetoothConnectReceiver)
+        requireContext().unregisterReceiver(bluetoothConnectStateReceiver)
     }
 
     interface OnFragmentInteractionListener {

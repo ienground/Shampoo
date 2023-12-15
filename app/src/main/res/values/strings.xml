@@ -1,58 +1,53 @@
 <resources>
     <string name="app_name">Shampoo</string>
-    <string name="dashboard">Dashboard</string>
-    <string name="store">Store</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+<!--    Overall Activity-->
+    <string name="add">Add</string>
+    <string name="monthDateFormat">M/d</string>
+    <string name="timeFormat">h:mm a</string>
+    <string name="dateFormat">EEEE, MMM d</string>
+    <string name="notifications">Notifications</string>
+    <string name="close">Close</string>
+    <string name="edit">Edit</string>
+    <string name="logs">Logs</string>
+
+<!--    MainActivity-->
     <string name="user_hello_morning">Good morning☀️</string>
     <string name="user_hello_afternoon">Have a great lunch🍽️</string>
     <string name="user_hello_evening">Good evening🎆</string>
     <string name="user_hello_night">Sleep tight🌙</string>
 
-    <string name="add_new_device">Add new device</string>
-    <string name="shampoo">Shampoo</string>
-    <string name="conditioner">Conditioner</string>
-    <string name="bodywash">Bodywash</string>
-    <string name="cleansing">Cleasing</string>
-    <string name="unknown">Unknown</string>
-    <string name="room">장소</string>
-    <string name="type">종류</string>
-    <string name="capacity">용량</string>
-    <string name="add">Add</string>
-    <string name="search">Search</string>
-    <string name="measuring">Measuring..</string>
-    <string name="measurement_completed">Measurement completed</string>
-    <string name="current_capacity">현 용량</string>
-    <string name="full_capacity">전체 용량</string>
-    <string name="name">Name</string>
-    <string name="notifications">Notifications</string>
-    <string name="no_devices">No devices</string>
-    <string name="measure_again">다시 측정하기</string>
-    <string name="delete">Delete</string>
-    <string name="delete_title">Delete?</string>
-    <string name="delete_content">Are you sure to delete?</string>
-    <string name="battery">Battery</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="store">Store</string>
+
     <string name="post_notification">Send notifications</string>
     <string name="post_notification_exp">The app sends notifications such as timers and alarms.</string>
     <string name="nearby_devices">Nearby Devices</string>
-    <string name="nearby_devices_exp">블루투스 LE 기기에 접근합니다.</string>
+    <string name="nearby_devices_exp">Access to Bluetooth LE Devices.</string>
     <string name="location">Location</string>
-    <string name="location_exp">사용자 근처의 기기를 탐색합니다.</string>
+    <string name="location_exp">Explore devices near user.</string>
     <string name="permission_title">Permission to use application</string>
     <string name="allowed">Permission allowed</string>
-    <string name="close">Close</string>
-    <string name="check_product_info">Check product info</string>
-    <string name="measure_current_capacity">Measure current capacity</string>
-    <string name="finish_setting">Finish setting</string>
-    <string name="cancel_title">Cancel?</string>
-    <string name="cancel_content">취소하면 처음부터 다시 시작해야 합니다.</string>
-    <string name="model">Model</string>
-    <string name="add_new_place">새 장소 추가..</string>
-    <string name="new_place">New place</string>
+
+<!--    MainDashboardFragment-->
+    <string name="no_devices">No devices</string>
+    <string name="add_new_device">Add new device</string>
+
+<!--    DetailActivity-->
+    <string name="delete">Delete</string>
+    <string name="delete_title">Delete?</string>
+    <string name="delete_content">Are you sure to delete?</string>
+
+<!--    Settings-->
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
+    <string name="cannot_delete_place">The room has a device and cannot be deleted.</string>
+    <string name="notifications_settings">Notifications Settings</string>
     <string name="settings">Settings</string>
     <string name="dev_ienlab">Designed, Developed By ienlab\nInstagram : @ienlab</string>
     <string name="settings_general">General</string>
     <string name="info_and_ask"><![CDATA[Info & Ask]]></string>
-    <string name="location_setting">장소 설정</string>
+    <string name="location_setting">Location settings</string>
     <string name="use_dynamic_colors">Use dynamic colors</string>
     <string name="use_dynamic_colors_sum_off">Apply the default color throughout the app.</string>
     <string name="use_dynamic_colors_sum_on">Apply dynamic colors throughout the app.</string>
@@ -61,24 +56,51 @@
     <string name="ask_to_dev">Ask to Developer</string>
     <string name="pref_ask_exp">Please send us bugs, questions, or your backup data in case of data aggregation errors!</string>
     <string name="ask">Ask</string>
-    <string name="email_text">Calarm User Comment</string>
+    <string name="email_text">Bubble User Comment</string>
     <string name="open_source_license">Open Source License</string>
     <string name="pref_opens_exp">Licenses of Open Sources Used in App</string>
-    <string name="shampoo_version">Shampoo Version</string>
+    <string name="shampoo_version">Bubble Version</string>
     <string name="place_settings">Place settings</string>
     <string name="fill_out_the_title">Fill out the title</string>
-    <string name="edit">Edit</string>
+<!--    DeviceAddActivity-->
+    <string name="search">Search</string>
+    <string name="measuring">Measuring..</string>
+    <string name="measurement_completed">Measurement completed</string>
+    <string name="measure_again">Measure again</string>
+    <string name="check_product_info">Check product info</string>
+    <string name="measure_current_capacity">Measure current capacity</string>
+    <string name="finish_setting">Finish setting</string>
+    <string name="cancel_title">Cancel?</string>
+    <string name="cancel_content">If cancel, you will have to start all over again.</string>
+
+<!--    DeviceType-->
+    <string name="shampoo">Shampoo</string>
+    <string name="conditioner">Conditioner</string>
+    <string name="bodywash">Bodywash</string>
+    <string name="cleansing">Cleasing</string>
+    <string name="unknown">Unknown</string>
+
+<!--    DeviceInfo-->
+    <string name="room">Place</string>
+    <string name="type">Type</string>
+    <string name="capacity">Capacity</string>
+    <string name="current_capacity">Current</string>
+    <string name="full_capacity">Max</string>
+    <string name="name">Name</string>
+    <string name="battery">Battery</string>
+    <string name="model">Model</string>
+    <string name="add_new_place">Add new place</string>
+    <string name="new_place">New place</string>
+
+<!--    Notifications-->
     <string name="battery_warning">Battery Warning</string>
     <string name="liquid_warning">Liquid Warning</string>
-    <string name="battery_low_title">%1$s 배터리 부족</string>
-    <string name="battery_low_content">배터리가 현재 %1$d%%입니다.</string>
-    <string name="liquid_low_title">%1$s 용량 부족</string>
-    <string name="liquid_low_content">남은 용량이 현재 %1$dml입니다.</string>
-    <string name="logs">Logs</string>
-    <string name="monthDateFormat">M/d</string>
-    <string name="timeFormat">a H:mm</string>
-    <string name="dateFormat">yyyy-MM-dd</string>
-    <string name="select_start_date">Select start date</string>
-    <string name="select_end_date">Select end date</string>
-    <string name="cannot_delete_place">방에 장치가 있어 삭제할 수 없습니다.</string>
+    <string name="battery_low_title">%1$s Low battery</string>
+    <string name="battery_low_content">Battery is currently %1$d%%.</string>
+    <string name="liquid_low_title">%1$s Low capacity</string>
+    <string name="liquid_low_content">Capacity is currently %1$dml.</string>
+    <string name="capacity_max_format">%1$dml 중</string>
+    <string name="capacity_current_format">%1$dml 남음🧴</string>
+    <string name="capacity_current_format_warning">%1$dml 남음🚨</string>
+
 </resources>

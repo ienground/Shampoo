@@ -33,6 +33,8 @@ import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.room.DeviceLogDatabase
 import zone.ien.shampoo.room.DeviceLogEntity
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
 
@@ -90,7 +92,7 @@ class DeviceAddActivity : AppCompatActivity(),
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = null
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, MyUtils.getAttrColor(theme, com.google.android.material.R.attr.colorOnSecondaryContainer)) })
+        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, getAttrColor(theme, Colors.colorOnSecondaryContainer)) })
 
         deviceDatabase = DeviceDatabase.getInstance(this)
         deviceLogDatabase = DeviceLogDatabase.getInstance(this)

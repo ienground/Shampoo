@@ -72,12 +72,13 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 }
                 BluetoothGatt.GATT_SUCCESS -> {
                     if (newState == BluetoothGatt.STATE_CONNECTED) {
-                        Dlog.d(TAG, "Connected to ${gatt?.device?.name}")
                         gatt?.discoverServices()
 
+                        Dlog.d(TAG, "Connected to ${gatt?.device?.name}  ${gatt?.device?.address} ${gatt?.device == null}")
+
                         gatt?.device?.let { device ->
-                            DeviceAddActivity.deviceName = device.name
-                            DeviceAddActivity.deviceAddress = device.address
+                            DeviceAddActivity.deviceName = device.name ?: ""
+                            DeviceAddActivity.deviceAddress = device.address ?: ""
 
                             GlobalScope.launch(Dispatchers.IO) {
                                 val entity = deviceDatabase?.getDao()?.get(device.address)
@@ -88,7 +89,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
 
                             Handler(Looper.getMainLooper()).postDelayed({
                                 context?.let { Dlog.d(TAG, setNotifyDescriptor(it, device.address).toString()) }
-                            }, 10 * 1000)
+                            }, 5 * 1000)
                         }
                     }
                 }
@@ -122,7 +123,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
 
         override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, byte: ByteArray) {
             super.onCharacteristicChanged(gatt, characteristic, byte)
-            Dlog.d(TAG, "onCharacteristicChanged ${gatts.size}")
+            Dlog.d(TAG, "onCharacteristicChanged ${gatts.size} ${gatt.device.address}")
             val data = String(byte).split(":")
             val type = data[0].toInt()
             val value = data[1].toInt()
@@ -188,7 +189,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
             super.onCharacteristicWrite(gatt, characteristic, status)
-            Dlog.d(TAG, "onCharacteristicWrite")
+            Dlog.d(TAG, "onCharacteristicWrite ${gatt?.device?.address}")
         }
     }
 
@@ -289,7 +290,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 } else {
                     intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice?
                 }
-                Dlog.d(TAG, "Request new connect ${device?.name}")
+                Dlog.d(TAG, "Request new connect ${device?.name} ${device?.address}")
 
                 device?.let {
                     if (gatts[it.address] == null) {
@@ -305,7 +306,6 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 writeCharacteristics.remove(address)
                 notifyCharacteristics.remove(address)
                 readCharacteristics.remove(address)
-//                val
             }
             ActionID.ACTION_NOTIFY_DESCRIPTOR -> {
                 val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
@@ -316,6 +316,13 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 val type = intent.getIntExtra(IntentKey.MESSAGE_TYPE, -1)
                 val message = intent.getStringExtra(IntentKey.MESSAGE_VALUE) ?: ""
                 sendMessage(context, address, type, message)
+            }
+            ActionID.ACTION_REQUEST_CONNECT_STATE -> {
+                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
+                context.sendBroadcast(Intent(IntentID.ACTION_RESPONSE_CONNECT_STATE).apply {
+                    putExtra(IntentKey.DEVICE_ADDRESS, address)
+                    putExtra(IntentKey.CONNECT_STATE, gatts[address] != null)
+                })
             }
         }
     }

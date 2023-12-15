@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import zone.ien.shampoo.R
 import zone.ien.shampoo.callback.PreferenceCallback
 import zone.ien.shampoo.databinding.AdapterSettingsCategoryBinding
-import zone.ien.shampoo.utils.MyUtils.getAttrColor
 import zone.ien.shampoo.data.CategoryObject
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 
 class SettingsCategoryAdapter(val items: ArrayList<CategoryObject>): RecyclerView.Adapter<SettingsCategoryAdapter.ItemViewHolder>() {
 
@@ -29,11 +30,11 @@ class SettingsCategoryAdapter(val items: ArrayList<CategoryObject>): RecyclerVie
         holder.bind(items[holder.bindingAdapterPosition])
         val root = holder.binding.root as ConstraintLayout
         if (items[holder.bindingAdapterPosition].id == selectedId && context.resources.getBoolean(R.bool.is_w600dp)) {
-            root.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, com.google.android.material.R.attr.colorSurfaceVariant))
-            holder.binding.icBackground.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, com.google.android.material.R.attr.colorSurface))
+            root.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, Colors.colorSurfaceVariant))
+            holder.binding.icBackground.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, Colors.colorSurface))
         } else {
-            root.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, com.google.android.material.R.attr.colorSurface))
-            holder.binding.icBackground.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, com.google.android.material.R.attr.colorPrimaryContainer))
+            root.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, Colors.colorSurface))
+            holder.binding.icBackground.backgroundTintList = ColorStateList.valueOf(getAttrColor(context.theme, Colors.colorPrimaryContainer))
         }
         root.setOnClickListener {
             val preSelectedPosition = items.indexOfFirst { it.id == selectedId }

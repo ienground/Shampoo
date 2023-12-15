@@ -29,7 +29,6 @@ import androidx.preference.SwitchPreferenceCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.google.android.gms .oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -42,19 +41,19 @@ import zone.ien.shampoo.adapter.SettingsCategoryAdapter
 import zone.ien.shampoo.callback.EmojiClickCallback
 import zone.ien.shampoo.callback.PlaceCallback
 import zone.ien.shampoo.callback.PreferenceCallback
-import zone.ien.shampoo.constant.IntentKey
-import zone.ien.shampoo.constant.IntentValue
 import zone.ien.shampoo.constant.SavedInstanceKey
 import zone.ien.shampoo.constant.SharedKey
 import zone.ien.shampoo.data.CategoryObject
 import zone.ien.shampoo.databinding.ActivitySettingsBinding
 import zone.ien.shampoo.databinding.DialogEmojiMoreBinding
 import zone.ien.shampoo.databinding.DialogInputBinding
+import zone.ien.shampoo.databinding.FragmentNotificationsBinding
 import zone.ien.shampoo.databinding.FragmentPlaceBinding
-import zone.ien.shampoo.databinding.FragmentPlaceBindingImpl
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.PlaceDatabase
 import zone.ien.shampoo.room.PlaceEntity
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.MyUtils
 import kotlin.collections.ArrayList
 
@@ -81,7 +80,7 @@ class SettingsActivity : AppCompatActivity() {
                 replace(R.id.container, when (menuId) { // singleton으로
                     R.id.menu_general -> SettingsPreferencesFragment.newInstance()
                     R.id.menu_place -> PlaceFragment.newInstance()
-//                    R.id.menu_notifications -> DeskclockPreferencesFragment.newInstance()
+                    R.id.menu_notifications -> NotificationsFragment.newInstance()
                     R.id.menu_info -> InfoPreferencesFragment.newInstance()
                     else -> SettingsPreferencesFragment.newInstance()
                 })
@@ -94,12 +93,7 @@ class SettingsActivity : AppCompatActivity() {
             binding.title.text = when (menuId) {
                 R.id.menu_general -> getString(R.string.settings_general)
                 R.id.menu_place -> getString(R.string.place_settings)
-//                R.id.menu_alarm -> getString(R.string.alarm_settings)
-//                R.id.menu_calendar_alarm -> getString(R.string.calarm_settings)
-//                R.id.menu_timer -> getString(R.string.timer_settings)
-//                R.id.menu_cycle_timer -> getString(R.string.cycle_timer_settings)
-//                R.id.menu_stopwatch -> getString(R.string.stopwatch_settings)
-//                R.id.menu_deskclock -> getString(R.string.deskclock_settings)
+                R.id.menu_notifications -> getString(R.string.notifications_settings)
                 R.id.menu_info -> getString(R.string.info_and_ask)
                 else -> ""
             }
@@ -113,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, MyUtils.getAttrColor(theme, com.google.android.material.R.attr.colorOnSecondaryContainer)) })
+        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, getAttrColor(theme, Colors.colorOnSecondaryContainer)) })
         supportActionBar?.title = null
 
         sharedPreferences = getSharedPreferences("${packageName}_preferences", Context.MODE_PRIVATE)
@@ -135,11 +129,7 @@ class SettingsActivity : AppCompatActivity() {
         val adapter = SettingsCategoryAdapter(arrayListOf(
             CategoryObject(R.id.menu_general, ContextCompat.getDrawable(this, R.drawable.ic_settings), getString(R.string.settings_general), getMenuContent(R.string.use_dynamic_colors)),
             CategoryObject(R.id.menu_place, ContextCompat.getDrawable(this, R.drawable.ic_location), getString(R.string.place_settings), getMenuContent(R.string.place_settings)),
-//            CategoryObject(R.id.menu_calendar_alarm, ContextCompat.getDrawable(this, R.drawable.ic_calarm), getString(R.string.calarm_settings), getMenuContent(R.string.calarm_create_option, R.string.calendar_source_of_calarm)),
-//            CategoryObject(R.id.menu_timer, ContextCompat.getDrawable(this, R.drawable.ic_hourglass_half), getString(R.string.timer_settings), getMenuContent(R.string.default_timer_sound, R.string.default_sub_timer_sound)),
-//            CategoryObject(R.id.menu_cycle_timer, ContextCompat.getDrawable(this, R.drawable.ic_hourglass_repeat), getString(R.string.cycle_timer_settings), getMenuContent(R.string.default_cycle_timer_sound)),
-//            CategoryObject(R.id.menu_stopwatch, ContextCompat.getDrawable(this, R.drawable.ic_timer), getString(R.string.stopwatch_settings), getMenuContent(R.string.title_no_show_reset_dialog)),
-//            CategoryObject(R.id.menu_deskclock, ContextCompat.getDrawable(this, R.drawable.ic_deskclock), getString(R.string.deskclock_settings), getMenuContent(R.string.force_black_background, R.string.hidden_noti_channels)),
+            CategoryObject(R.id.menu_notifications, ContextCompat.getDrawable(this, R.drawable.ic_notifications), getString(R.string.notifications_settings), getMenuContent(R.string.notifications_settings)),
             CategoryObject(R.id.menu_info, ContextCompat.getDrawable(this, R.drawable.ic_info), getString(R.string.info_and_ask), getMenuContent(R.string.update_log, R.string.ask_to_dev)),
         )).apply {
             setCallbackListener(preferenceCallback)
@@ -149,17 +139,13 @@ class SettingsActivity : AppCompatActivity() {
             adapter.setSelectedId(savedInstanceState.getInt(SavedInstanceKey.PREF_PAGE_ID))
             binding.title.text = when (savedInstanceState.getInt(SavedInstanceKey.PREF_PAGE_ID)) {
                 R.id.menu_general -> getString(R.string.settings_general)
-//                R.id.menu_alarm -> getString(R.string.alarm_settings)
-//                R.id.menu_calendar_alarm -> getString(R.string.calarm_settings)
-//                R.id.menu_timer -> getString(R.string.timer_settings)
-//                R.id.menu_cycle_timer -> getString(R.string.cycle_timer_settings)
-//                R.id.menu_stopwatch -> getString(R.string.stopwatch_settings)
-//                R.id.menu_deskclock -> getString(R.string.deskclock_settings)
+                R.id.menu_place -> getString(R.string.place_settings)
+                R.id.menu_notifications -> getString(R.string.notifications_settings)
                 R.id.menu_info -> getString(R.string.info_and_ask)
                 else -> ""
             }
         } else if (resources.getBoolean(R.bool.is_w600dp)) {
-//            adapter.select(R.id.menu_general)
+            adapter.select(R.id.menu_general)
         }
 
         binding.navigationView.adapter = adapter
@@ -191,17 +177,6 @@ class SettingsActivity : AppCompatActivity() {
         return builder.toString()
     }
 
-    companion object {
-        fun Map<String, String>.getKeyArray(): Array<CharSequence> {
-            val result = mutableListOf<CharSequence>()
-            for (key in keys) result.add(key)
-            return result.toTypedArray()
-        }
-
-        private var alarmRingtones = mutableMapOf<String, String>()
-        private var notificationRingtones = mutableMapOf<String, String>()
-    }
-
     class SettingsPreferencesFragment: PreferenceFragmentCompat() {
 
         lateinit var sharedPreferences: SharedPreferences
@@ -214,7 +189,7 @@ class SettingsActivity : AppCompatActivity() {
             geocoder = Geocoder(requireContext())
             am = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-            val colorPrimary = MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorPrimary)
+            val colorPrimary = getAttrColor(requireContext().theme, Colors.colorPrimary)
             val prefIsMaterialYou = findPreference<SwitchPreferenceCompat>(SharedKey.MATERIAL_YOU)
             prefIsMaterialYou?.icon?.setTint(colorPrimary)
         }
@@ -237,7 +212,7 @@ class SettingsActivity : AppCompatActivity() {
 //            sharedPreferences = requireContext().getSharedPreferences("${requireContext().packageName}_preferences", Context.MODE_PRIVATE)
 //            storage = AppStorage(requireContext())
 //
-//            val colorPrimary = MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorPrimary)
+//            val colorPrimary = MyUtils.getAttrColor(requireContext().theme, Colors.colorPrimary)
 //            val prefAlarmAutoDismiss = findPreference<Preference>("alarm_dismiss_duration")
 //            val prefAlarmToCreate = findPreference<Preference>("alarm_to_create")
 //            val prefDefaultAlarmSound = findPreference<Preference>("default_alarm_sound_pref")
@@ -446,91 +421,6 @@ class SettingsActivity : AppCompatActivity() {
             placeDatabase = PlaceDatabase.getInstance(requireContext())
             deviceDatabase = DeviceDatabase.getInstance(requireContext())
 
-            requireActivity().addMenuProvider(object: MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.menu_add, menu)
-                    for (menuItem in menu.iterator()) {
-                        menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
-                    }
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.menu_add -> {
-                            val dialogBinding: DialogInputBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_input, null, false)
-                            val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
-                                dialogBinding.inputLayout.hint = context.getString(R.string.new_place)
-                                dialogBinding.tvEmojiPreview.text = "🛁"
-
-                                setPositiveButton(android.R.string.ok) { dialog, id -> }
-                                setNegativeButton(android.R.string.cancel) { dialog, id -> }
-
-                                setView(dialogBinding.root)
-                            }.create()
-
-                            dialogBinding.tvEmojiPreview.setOnClickListener {
-                                var dialog2: AlertDialog? = null
-                                val callbackListener = object: EmojiClickCallback {
-                                    override fun click(emoji: String) {
-                                        dialogBinding.tvEmojiPreview.text = emoji
-                                        dialog2?.dismiss()
-                                    }
-                                }
-                                dialog2 = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
-                                    val emojiBinding: DialogEmojiMoreBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_emoji_more, LinearLayout(requireContext()), false)
-                                    for (i in 0 until emojiBinding.tabLayout.tabCount) emojiBinding.tabLayout.getTabAt(i)?.text = MyUtils.emoji_labels[i]
-
-                                    val gridLayoutManager = GridLayoutManager(requireContext(), MyUtils.calculateNoOfColumns(requireContext(), 48f))
-                                    emojiBinding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-                                        override fun onTabSelected(tab: TabLayout.Tab) {
-                                            emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[tab.position]).apply {
-                                                setCallbackListener(callbackListener)
-                                            }
-                                        }
-                                        override fun onTabReselected(tab: TabLayout.Tab) {}
-                                        override fun onTabUnselected(tab: TabLayout.Tab) {}
-                                    })
-                                    emojiBinding.list.layoutManager = gridLayoutManager
-                                    emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[0]).apply {
-                                        setCallbackListener(callbackListener)
-                                    }
-                                    emojiBinding.tabLayout.selectTab(emojiBinding.tabLayout.getTabAt(0))
-
-                                    setNegativeButton(android.R.string.cancel) { _, _ -> }
-
-                                    setView(emojiBinding.root)
-                                }.create()
-                                dialog2.show()
-                            }
-
-                            dialog.show()
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                                val title = dialogBinding.inputLayout.editText?.text?.toString() ?: ""
-                                val icon = dialogBinding.tvEmojiPreview.text.toString()
-                                if (title != "") {
-                                    val entity = PlaceEntity(icon, title)
-                                    GlobalScope.launch(Dispatchers.IO) {
-                                        val id = placeDatabase?.getDao()?.add(entity)
-                                        entity.id = id
-                                        withContext(Dispatchers.Main) {
-                                            ((binding.root as RecyclerView).adapter as PlaceAdapter).add(entity)
-                                            dialog.dismiss()
-                                        }
-                                    }
-                                } else {
-                                    dialog.window?.decorView?.animate()?.translationX(16f)?.interpolator = CycleInterpolator(7f)
-                                    dialogBinding.inputLayout.error = getString(R.string.fill_out_the_title)
-                                }
-                            }
-                            true
-                        }
-                        else -> {
-                            false
-                        }
-                    }
-                }
-            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
             val placeCallback = object: PlaceCallback {
                 override fun edit(position: Int, entity: PlaceEntity) {
                     val dialogBinding: DialogInputBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_input, null, false)
@@ -587,7 +477,7 @@ class SettingsActivity : AppCompatActivity() {
                         if (title != "") {
                             entity.title = title
                             entity.icon = icon
-                            ((binding.root as RecyclerView).adapter as PlaceAdapter).edit(entity)
+                            (binding.list.adapter as PlaceAdapter).edit(entity)
                             GlobalScope.launch(Dispatchers.IO) {
                                 placeDatabase?.getDao()?.update(entity)
                                 dialog.dismiss()
@@ -630,8 +520,76 @@ class SettingsActivity : AppCompatActivity() {
                 val data = placeDatabase?.getDao()?.getAll() as ArrayList
 
                 withContext(Dispatchers.Main) {
-                    (binding.root as RecyclerView).adapter = PlaceAdapter(data).apply {
+                    binding.list.adapter = PlaceAdapter(data).apply {
                         setClickCallback(placeCallback)
+                    }
+                }
+
+                binding.btnAdd.setOnClickListener {
+                    val dialogBinding: DialogInputBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_input, null, false)
+                    val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
+                        dialogBinding.inputLayout.hint = context.getString(R.string.new_place)
+                        dialogBinding.tvEmojiPreview.text = "🛁"
+
+                        setPositiveButton(android.R.string.ok) { dialog, id -> }
+                        setNegativeButton(android.R.string.cancel) { dialog, id -> }
+
+                        setView(dialogBinding.root)
+                    }.create()
+
+                    dialogBinding.tvEmojiPreview.setOnClickListener {
+                        var dialog2: AlertDialog? = null
+                        val callbackListener = object: EmojiClickCallback {
+                            override fun click(emoji: String) {
+                                dialogBinding.tvEmojiPreview.text = emoji
+                                dialog2?.dismiss()
+                            }
+                        }
+                        dialog2 = MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Shampoo_MaterialAlertDialog).apply {
+                            val emojiBinding: DialogEmojiMoreBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()), R.layout.dialog_emoji_more, LinearLayout(requireContext()), false)
+                            for (i in 0 until emojiBinding.tabLayout.tabCount) emojiBinding.tabLayout.getTabAt(i)?.text = MyUtils.emoji_labels[i]
+
+                            val gridLayoutManager = GridLayoutManager(requireContext(), MyUtils.calculateNoOfColumns(requireContext(), 48f))
+                            emojiBinding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                override fun onTabSelected(tab: TabLayout.Tab) {
+                                    emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[tab.position]).apply {
+                                        setCallbackListener(callbackListener)
+                                    }
+                                }
+                                override fun onTabReselected(tab: TabLayout.Tab) {}
+                                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                            })
+                            emojiBinding.list.layoutManager = gridLayoutManager
+                            emojiBinding.list.adapter = EmojiMoreAdapter(MyUtils.emojis[0]).apply {
+                                setCallbackListener(callbackListener)
+                            }
+                            emojiBinding.tabLayout.selectTab(emojiBinding.tabLayout.getTabAt(0))
+
+                            setNegativeButton(android.R.string.cancel) { _, _ -> }
+
+                            setView(emojiBinding.root)
+                        }.create()
+                        dialog2?.show()
+                    }
+
+                    dialog.show()
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                        val title = dialogBinding.inputLayout.editText?.text?.toString() ?: ""
+                        val icon = dialogBinding.tvEmojiPreview.text.toString()
+                        if (title != "") {
+                            val entity = PlaceEntity(icon, title)
+                            GlobalScope.launch(Dispatchers.IO) {
+                                val id = placeDatabase?.getDao()?.add(entity)
+                                entity.id = id
+                                withContext(Dispatchers.Main) {
+                                    ((binding.root as RecyclerView).adapter as PlaceAdapter).add(entity)
+                                    dialog.dismiss()
+                                }
+                            }
+                        } else {
+                            dialog.window?.decorView?.animate()?.translationX(16f)?.interpolator = CycleInterpolator(7f)
+                            dialogBinding.inputLayout.error = getString(R.string.fill_out_the_title)
+                        }
                     }
                 }
             }
@@ -646,6 +604,48 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    class NotificationsFragment: Fragment() {
+
+        lateinit var binding: FragmentNotificationsBinding
+        private var placeDatabase: PlaceDatabase? = null
+        private var deviceDatabase: DeviceDatabase? = null
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notifications, container, false)
+            return binding.root
+        }
+
+        @OptIn(DelicateCoroutinesApi::class)
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            placeDatabase = PlaceDatabase.getInstance(requireContext())
+            deviceDatabase = DeviceDatabase.getInstance(requireContext())
+
+            requireActivity().addMenuProvider(object: MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//                    menuInflater.inflate(R.menu.menu_add, menu)
+                    for (menuItem in menu.iterator()) {
+                        menuItem.iconTintList = ColorStateList.valueOf(getAttrColor(requireContext().theme, Colors.colorOnSecondaryContainer))
+                    }
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return false
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        }
+
+        companion object {
+            @JvmStatic
+            fun newInstance() = NotificationsFragment().apply {
+                val args = Bundle()
+                arguments = args
+            }
+        }
+    }
+
     class InfoPreferencesFragment: PreferenceFragmentCompat() {
 
         private lateinit var sharedPreferences: SharedPreferences
@@ -653,7 +653,7 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences_info, rootKey)
 
-            val colorPrimary = MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorPrimary)
+            val colorPrimary = getAttrColor(requireContext().theme, Colors.colorPrimary)
             val prefUpdatelog = findPreference<Preference>("changelog")
             val prefEmail = findPreference<Preference>("ask_to_dev")
             val prefOpensource = findPreference<Preference>("open_source")

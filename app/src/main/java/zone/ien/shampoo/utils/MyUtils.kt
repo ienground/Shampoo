@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.text.Html
 import android.text.Spanned
 import android.util.TypedValue
+import zone.ien.shampoo.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.ByteBuffer
@@ -30,6 +31,19 @@ object MyUtils {
         val displayMetrics = context.resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         return (screenWidthDp / columnWidthDp + 0.5).toInt()
+    }
+
+    fun getBatteryDrawable(battery: Int): Int {
+        return when (battery) {
+            in 95..100 -> R.drawable.ic_battery_full
+            in 90 until 95 -> R.drawable.ic_battery_90
+            in 70 until 90 -> R.drawable.ic_battery_80
+            in 60 until 70 -> R.drawable.ic_battery_60
+            in 50 until 60 -> R.drawable.ic_battery_50
+            in 30 until 50 -> R.drawable.ic_battery_30
+            in 20 until 30 -> R.drawable.ic_battery_20
+            else -> R.drawable.ic_battery_alert
+        }
     }
 
     fun fromHtml(source: String): Spanned {
@@ -117,5 +131,13 @@ object MyUtils {
         return ByteBuffer.wrap(copy).double
     }
 
-    fun getAttrColor(theme: Resources.Theme, id: Int): Int = TypedValue().apply { theme.resolveAttribute(id, this, true) }.data
+    fun getResourceId(resourceName: String, c: Class<*>): Int {
+        return try {
+            val field = c.getDeclaredField(resourceName)
+            field.getInt(field)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            -1
+        }
+    }
 }

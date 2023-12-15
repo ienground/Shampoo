@@ -30,6 +30,8 @@ import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.room.DeviceLogEntity
 import zone.ien.shampoo.room.NotificationsDatabase
 import zone.ien.shampoo.room.NotificationsEntity
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
 import zone.ien.shampoo.utils.MyUtils.timeZero
@@ -59,7 +61,7 @@ class NotificationsActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = null
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, MyUtils.getAttrColor(theme, com.google.android.material.R.attr.colorOnSecondaryContainer)) })
+        supportActionBar?.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back)?.apply { DrawableCompat.setTint(this, getAttrColor(theme, Colors.colorOnSecondaryContainer)) })
 
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}

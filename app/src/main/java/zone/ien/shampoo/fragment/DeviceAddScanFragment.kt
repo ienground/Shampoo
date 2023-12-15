@@ -49,6 +49,8 @@ import zone.ien.shampoo.constant.IntentID
 import zone.ien.shampoo.constant.IntentKey
 import zone.ien.shampoo.databinding.FragmentDeviceAddScanBinding
 import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
 import zone.ien.shampoo.utils.MyUtils.getBluetoothGattProperty
@@ -95,7 +97,7 @@ class DeviceAddScanFragment : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_device_add_scan, menu)
                 for (menuItem in menu.iterator()) {
-                    menuItem.iconTintList = ColorStateList.valueOf(MyUtils.getAttrColor(requireContext().theme, com.google.android.material.R.attr.colorOnSecondaryContainer))
+                    menuItem.iconTintList = ColorStateList.valueOf(getAttrColor(requireContext().theme, Colors.colorOnSecondaryContainer))
                     if (menuItem.itemId == R.id.menu_search) menuSearch = menuItem
                 }
             }

@@ -11,6 +11,7 @@ import zone.ien.shampoo.callback.DashboardCallback
 import zone.ien.shampoo.room.DeviceEntity
 import zone.ien.shampoo.databinding.AdapterDashboardBinding
 import zone.ien.shampoo.utils.Dlog
+import zone.ien.shampoo.utils.MyUtils.getBatteryDrawable
 
 class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter<DashboardAdapter.ItemViewHolder>() {
 
@@ -35,18 +36,22 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
             DeviceEntity.TYPE_CLEANSING -> R.string.cleansing
             else -> R.string.unknown
         })
-        holder.binding.icBattery.setImageResource(when (items[holder.bindingAdapterPosition].battery) {
-            in 95..100 -> R.drawable.ic_battery_full
-            in 90 until 95 -> R.drawable.ic_battery_90
-            in 70 until 90 -> R.drawable.ic_battery_80
-            in 60 until 70 -> R.drawable.ic_battery_60
-            in 50 until 60 -> R.drawable.ic_battery_50
-            in 30 until 50 -> R.drawable.ic_battery_30
-            in 20 until 30 -> R.drawable.ic_battery_20
-            else -> R.drawable.ic_battery_alert
-        })
+        holder.binding.icBattery.setImageResource(getBatteryDrawable(items[holder.bindingAdapterPosition].battery))
         holder.binding.root.setOnClickListener {
             callbackListener?.callback(holder.bindingAdapterPosition, items[holder.bindingAdapterPosition].id ?: -1)
+        }
+        holder.binding.icConnect.setImageResource(if (items[holder.bindingAdapterPosition].isConnected) R.drawable.ic_cloud else R.drawable.ic_cloud_off)
+    }
+
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            for (payload in payloads) {
+                if (payload is String) {
+                    holder.binding.icConnect.setImageResource(if (items[holder.bindingAdapterPosition].isConnected) R.drawable.ic_cloud else R.drawable.ic_cloud_off)
+                }
+            }
         }
     }
 
@@ -60,6 +65,22 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
         items.add(entity)
         notifyItemInserted(items.lastIndex)
 //        items.sortBy { it.room }
+    }
+
+    fun update(entity: DeviceEntity) {
+        val index = items.indexOfFirst { it.id == entity.id }
+        if (index != -1) {
+            items[index] = entity
+            notifyItemChanged(index)
+        }
+    }
+
+    fun updateConnectionState(address: String, isConnected: Boolean) {
+        val index = items.indexOfFirst { it.address == address }
+        if (index != -1) {
+            items[index].isConnected = isConnected
+            notifyItemChanged(index, "")
+        }
     }
 
     fun delete(id: Long) {

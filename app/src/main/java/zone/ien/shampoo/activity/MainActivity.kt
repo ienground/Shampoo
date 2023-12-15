@@ -31,6 +31,8 @@ import zone.ien.shampoo.fragment.MainDashboardFragment
 import zone.ien.shampoo.fragment.MainStoreFragment
 import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.room.DeviceDatabase
+import zone.ien.shampoo.utils.ColorUtils.getAttrColor
+import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
 
@@ -77,6 +79,7 @@ class MainActivity : AppCompatActivity(),
             it.addAction(ActionID.ACTION_DISCONNECT_DEVICE)
             it.addAction(ActionID.ACTION_NOTIFY_DESCRIPTOR)
             it.addAction(ActionID.ACTION_SEND_DEVICE)
+            it.addAction(ActionID.ACTION_REQUEST_CONNECT_STATE)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -90,7 +93,7 @@ class MainActivity : AppCompatActivity(),
             || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
             || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             || (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) {
-            val colorOnSecondaryContainer = MyUtils.getAttrColor(theme, com.google.android.material.R.attr.colorOnSecondaryContainer)
+            val colorOnSecondaryContainer = getAttrColor(theme, Colors.colorOnSecondaryContainer)
             val dialogBinding: DialogPermissionBinding = DataBindingUtil.inflate(layoutInflater, R.layout.dialog_permission, null, false)
             val dialog = MaterialAlertDialogBuilder(this, R.style.Theme_Shampoo_MaterialAlertDialog).apply {
                 setIcon(R.drawable.ic_security)
@@ -183,7 +186,7 @@ class MainActivity : AppCompatActivity(),
                     || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) {
-                    val colorError = MyUtils.getAttrColor(theme, com.google.android.material.R.attr.colorError)
+                    val colorError = getAttrColor(theme, Colors.colorError)
                     dialog.window?.decorView?.animate()?.translationX(16f)?.interpolator = CycleInterpolator(7f)
                     if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
                         dialogBinding.tvNearbyDevices.setTextColor(colorError)

@@ -11,4 +11,10 @@ object IntentKey {
 
     const val ACTION_TYPE = "action_type" // Int
 
+    // LOG TYPE
+    const val LOG_TYPE = "log_type"
+
+    // Connection
+    const val CONNECT_STATE = "connect_state"
+
 }

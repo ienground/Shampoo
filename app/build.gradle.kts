@@ -70,6 +70,7 @@ dependencies {
     implementation("com.opencsv:opencsv:5.8")
     implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.dinuscxj:circleprogressbar:1.3.0")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
