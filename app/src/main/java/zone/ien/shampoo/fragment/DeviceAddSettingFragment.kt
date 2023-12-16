@@ -204,12 +204,14 @@ class DeviceAddSettingFragment : Fragment() {
 
         product?.let {
             Dlog.d(TAG, it.toString())
-            binding.tvContentMax.text = it[3]
+            binding.tvLiquidMax.text = getString(R.string.capacity_max_format, it[4].toInt())
+            binding.tvLiquidCurrent.text = getString(R.string.capacity_current_format, DeviceAddActivity.deviceCapacity)
             binding.tvContentModel.text = it[2]
             binding.tvContentType.text = DeviceEntity.getTypeString(requireContext(), it[3].toInt())
-            binding.tvContentMax.text = "${it[4]}ml"
-            binding.tvContentCapacity.text = "${DeviceAddActivity.deviceCapacity}ml"
             binding.tvContentModel.isSelected = true
+
+            binding.progressBar.max = it[4].toInt()
+            binding.progressBar.progress = DeviceAddActivity.deviceCapacity
 
             if (it[7] != "") {
                 Dlog.d(TAG, "link: ${it[7]}")

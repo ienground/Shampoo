@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            tools:text="H"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:background="@drawable/circle"
+            android:backgroundTint="?attr/colorSurfaceVariant"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_place"
+            app:layout_constraintBottom_toBottomOf="@id/tv_place"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_place"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="Room"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/tv_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/adapter_dashboard"
+            tools:itemCount="2"
+            android:layout_marginHorizontal="@dimen/usual_margin_half"
+            android:layout_marginTop="@dimen/usual_margin"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            app:spanCount="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_place" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

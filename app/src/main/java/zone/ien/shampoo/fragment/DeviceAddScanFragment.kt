@@ -182,6 +182,7 @@ class DeviceAddScanFragment : Fragment() {
 
             if (context != null) {
                 if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
+                Dlog.d(TAG, "${result.device.address} ${result.device.name}")
                 if (result.device != null && result.device.name.equals(DeviceInfo.DEVICE_NAME, ignoreCase = true) && hashDeviceMap[result.device.address] == null) {
                     hashDeviceMap[result.device.address] = result.device
                     adapter.add(result.device)

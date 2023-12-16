@@ -333,17 +333,17 @@ class DetailActivity : AppCompatActivity() {
                         binding.content.tabs.getTabAt(1)?.select()
                         binding.content.tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
                             override fun onTabSelected(tab: TabLayout.Tab) {
-                                val items: ArrayList<DeviceLogEntity>
+                                val items: List<DeviceLogEntity>
                                 val type: Int
 
                                 when (tab.position) {
                                     0 -> {
-                                        items = list.filter { it.capacity != -1 }.take(5) as ArrayList
+                                        items = list.filter { it.capacity != -1 }.take(5)
                                         type = MessageType.TYPE_LEVEL
                                         binding.content.graphUsage.axisLeft.axisMaximum = (device?.max ?: 1000).toFloat()
                                     }
                                     else -> {
-                                        items = list.filter { it.battery != -1 }.take(5) as ArrayList
+                                        items = list.filter { it.battery != -1 }.take(5)
                                         type = MessageType.TYPE_BATTERY
                                         binding.content.graphUsage.axisLeft.axisMaximum = 100f
                                     }

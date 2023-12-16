@@ -26,8 +26,8 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.binding.tvCapacity.text = "${(items[holder.bindingAdapterPosition].capacity.toFloat() / items[holder.bindingAdapterPosition].max * 100).toInt()}%"
-        holder.binding.progress.max = items[holder.bindingAdapterPosition].max.toFloat()
-        holder.binding.progress.progress = items[holder.bindingAdapterPosition].capacity.toFloat()
+        holder.binding.progress.max = items[holder.bindingAdapterPosition].max//.toFloat()
+        holder.binding.progress.progress = items[holder.bindingAdapterPosition].capacity//.toFloat()
         holder.binding.tvName.text = items[holder.bindingAdapterPosition].title
         holder.binding.tvType.text = context.getString(when (items[holder.bindingAdapterPosition].type) {
             DeviceEntity.TYPE_SHAMPOO -> R.string.shampoo
@@ -89,7 +89,6 @@ class DashboardAdapter(var items: ArrayList<DeviceEntity>): RecyclerView.Adapter
             items.removeAt(index)
             notifyItemRemoved(index)
         }
-
     }
 
     inner class ItemViewHolder(val binding: AdapterDashboardBinding): RecyclerView.ViewHolder(binding.root) {
