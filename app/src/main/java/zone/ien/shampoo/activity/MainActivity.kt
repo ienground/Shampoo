@@ -1,6 +1,8 @@
 package zone.ien.shampoo.activity
 
 import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -22,19 +24,24 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zone.ien.shampoo.R
 import zone.ien.shampoo.constant.ActionID
+import zone.ien.shampoo.constant.PendingIntentReqCode
 import zone.ien.shampoo.databinding.ActivityMainBinding
 import zone.ien.shampoo.databinding.DialogPermissionBinding
 import zone.ien.shampoo.fragment.MainDashboardFragment
 import zone.ien.shampoo.fragment.MainStoreFragment
+import zone.ien.shampoo.receiver.BTSyncReceiver
 import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.room.DeviceDatabase
 import zone.ien.shampoo.utils.ColorUtils.getAttrColor
 import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
 import zone.ien.shampoo.utils.MyUtils
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 const val TAG = "ShampooTAG"
 
@@ -217,6 +224,12 @@ class MainActivity : AppCompatActivity(),
         if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             connectDevices()
         }
+
+        val context = applicationContext
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar = Calendar.getInstance()
+        val pendingIntent = PendingIntent.getBroadcast(context, PendingIntentReqCode.BUBBLE_SCHEDULE_DAY, Intent(context, BTSyncReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, 60 * 1000L, pendingIntent)
     }
 
     private fun loadFragment(fragment: Fragment?): Boolean {

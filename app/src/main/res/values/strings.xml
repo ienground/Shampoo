@@ -106,5 +106,6 @@
     <string name="no_notifications">No notifications</string>
     <string name="select_device">Select device</string>
     <string name="no_histories">No histories</string>
+    <string name="zeroing">영점 조절 중..</string>
 
 </resources>

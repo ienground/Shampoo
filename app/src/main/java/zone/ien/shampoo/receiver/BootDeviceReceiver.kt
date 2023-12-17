@@ -35,7 +35,7 @@ class BootDeviceReceiver : BroadcastReceiver() {
                     set(Calendar.MINUTE, 0)
                 }
                 val pendingIntent = PendingIntent.getBroadcast(context, PendingIntentReqCode.BUBBLE_SCHEDULE_DAY, Intent(context, BTSyncReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, pendingIntent)
+                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, 60 * 1000L, pendingIntent)
             }
         }
     }
