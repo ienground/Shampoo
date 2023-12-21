@@ -75,8 +75,6 @@ class DashboardGroupAdapter(var items: ArrayList<Pair<Long, DashboardAdapter>>):
     }
 
     fun updateConnectionState(address: String, isConnected: Boolean) {
-//        val index = items.indexOfFirst { it.first == entity.room }
-
         var index = -1
         for ((i, item) in items.withIndex()) {
             val subIndex = item.second.items.indexOfFirst { it.address == address }

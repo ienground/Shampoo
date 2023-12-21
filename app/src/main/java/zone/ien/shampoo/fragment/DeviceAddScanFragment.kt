@@ -79,7 +79,7 @@ class DeviceAddScanFragment : Fragment() {
             })
             barcodeLauncher.launch(ScanOptions().apply {
                 setOrientationLocked(true)
-                setCameraId(1)
+                setCameraId(0)
             })
         }
     }

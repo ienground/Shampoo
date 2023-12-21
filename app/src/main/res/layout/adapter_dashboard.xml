@@ -35,7 +35,7 @@
                 android:id="@+id/ic_connect"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_cloud"
+                android:src="@drawable/ic_cloud_off"
                 app:tint="?attr/colorOnSecondaryContainer"
                 android:layout_marginEnd="@dimen/usual_margin_half"
                 app:layout_constraintEnd_toStartOf="@id/ic_battery"

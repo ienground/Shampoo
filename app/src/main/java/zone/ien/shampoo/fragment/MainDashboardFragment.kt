@@ -8,6 +8,8 @@ import android.app.Activity.RECEIVER_EXPORTED
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -67,6 +69,8 @@ class MainDashboardFragment : Fragment() {
     private var mListener: OnFragmentInteractionListener? = null
     private var deviceDatabase: DeviceDatabase? = null
     private var deviceLogDatabase: DeviceLogDatabase? = null
+    private lateinit var bm: BluetoothManager
+    private lateinit var bluetoothAdapter: BluetoothAdapter
 
     lateinit var deviceAddActivityLauncher: ActivityResultLauncher<Intent>
     lateinit var detailActivityLauncher: ActivityResultLauncher<Intent>
@@ -80,7 +84,6 @@ class MainDashboardFragment : Fragment() {
     }
 
     private var bluetoothConnectReceiver: BroadcastReceiver? = null
-    private var bluetoothConnectStateReceiver: BroadcastReceiver? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main_dashboard, container, false)
@@ -124,6 +127,8 @@ class MainDashboardFragment : Fragment() {
 
         deviceDatabase = DeviceDatabase.getInstance(requireContext())
         deviceLogDatabase = DeviceLogDatabase.getInstance(requireContext())
+        bm = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothAdapter = bm.adapter
 
         binding.subTitle.text = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
             in 6..10 -> getString(R.string.user_hello_morning)
@@ -153,11 +158,10 @@ class MainDashboardFragment : Fragment() {
                     capacity?.let {
                         if (it.isNotEmpty()) entity.capacity = it[0].capacity
                     }
-                    requireContext().sendBroadcast(Intent(ActionID.ACTION_REQUEST_CONNECT_STATE).apply {
-                        putExtra(IntentKey.DEVICE_ADDRESS, entity.address)
-                    })
-
-
+                    if (requireContext().checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                        val device = bluetoothAdapter.getRemoteDevice(entity.address)
+                        entity.isConnected = bm.getConnectionState(device, BluetoothProfile.GATT) == BluetoothProfile.STATE_CONNECTED
+                    }
                 }
 
                 val adapter = DashboardGroupAdapter(group).apply {
@@ -236,14 +240,6 @@ class MainDashboardFragment : Fragment() {
             }
         }
 
-        bluetoothConnectStateReceiver = object: BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
-                val isConnected = intent.getBooleanExtra(IntentKey.CONNECT_STATE, false)
-
-                (binding.list.adapter as DashboardGroupAdapter).updateConnectionState(address, isConnected)
-            }
-        }
         bluetoothConnectReceiver = object: BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return
@@ -281,10 +277,8 @@ class MainDashboardFragment : Fragment() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireContext().registerReceiver(bluetoothConnectReceiver, intentFilter, RECEIVER_EXPORTED)
-            requireContext().registerReceiver(bluetoothConnectStateReceiver, IntentFilter(IntentID.ACTION_RESPONSE_CONNECT_STATE), RECEIVER_EXPORTED)
         } else {
             requireContext().registerReceiver(bluetoothConnectReceiver, intentFilter)
-            requireContext().registerReceiver(bluetoothConnectStateReceiver, IntentFilter(IntentID.ACTION_RESPONSE_CONNECT_STATE))
         }
     }
 
@@ -301,7 +295,6 @@ class MainDashboardFragment : Fragment() {
         super.onDetach()
         mListener = null
         requireContext().unregisterReceiver(bluetoothConnectReceiver)
-        requireContext().unregisterReceiver(bluetoothConnectStateReceiver)
     }
 
     interface OnFragmentInteractionListener {

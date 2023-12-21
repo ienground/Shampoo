@@ -17,4 +17,8 @@ object IntentKey {
     // Connection
     const val CONNECT_STATE = "connect_state"
 
+
+    const val NOTI_TYPE = "notification_type"
+    const val ITEM_ID = "item_id" // Long
+
 }

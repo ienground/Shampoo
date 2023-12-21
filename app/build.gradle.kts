@@ -55,8 +55,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 
     val roomVersion = "2.6.1"

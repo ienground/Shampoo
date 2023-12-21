@@ -159,6 +159,10 @@ class SettingsActivity : AppCompatActivity() {
                 setPositiveButton(android.R.string.ok) { dialog, _ -> }
             }.show()
         }
+        binding.appInfo.setOnLongClickListener {
+            startActivity(Intent(this, DevModeActivity::class.java))
+            true
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

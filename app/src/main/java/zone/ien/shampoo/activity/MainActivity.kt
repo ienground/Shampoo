@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity(),
             it.addAction(ActionID.ACTION_DISCONNECT_DEVICE)
             it.addAction(ActionID.ACTION_NOTIFY_DESCRIPTOR)
             it.addAction(ActionID.ACTION_SEND_DEVICE)
-            it.addAction(ActionID.ACTION_REQUEST_CONNECT_STATE)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

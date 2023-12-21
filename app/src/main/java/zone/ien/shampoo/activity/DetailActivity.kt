@@ -7,7 +7,6 @@ import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.view.DragEvent
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -25,7 +24,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.EntryXComparator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
@@ -49,7 +47,6 @@ import zone.ien.shampoo.room.DeviceLogDatabase
 import zone.ien.shampoo.room.DeviceLogEntity
 import zone.ien.shampoo.room.NotificationsDatabase
 import zone.ien.shampoo.room.PlaceDatabase
-import zone.ien.shampoo.utils.ColorUtils
 import zone.ien.shampoo.utils.ColorUtils.getAttrColor
 import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
@@ -61,7 +58,6 @@ import java.util.Calendar
 import java.util.Collections
 import java.util.Date
 import java.util.Locale
-import kotlin.math.floor
 
 class DetailActivity : AppCompatActivity() {
 
@@ -73,6 +69,9 @@ class DetailActivity : AppCompatActivity() {
     private var placeDatabase: PlaceDatabase? = null
     private var id: Long = -1
     private var device: DeviceEntity? = null
+
+    private lateinit var dateTimeFormat: SimpleDateFormat
+    private lateinit var dateFormat: SimpleDateFormat
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,6 +132,8 @@ class DetailActivity : AppCompatActivity() {
         deviceLogDatabase = DeviceLogDatabase.getInstance(this)
         notificationsDatabase = NotificationsDatabase.getInstance(this)
         placeDatabase = PlaceDatabase.getInstance(this)
+        dateTimeFormat = SimpleDateFormat("${getString(R.string.dateFormat)} ${getString(R.string.timeFormat)}", Locale.getDefault())
+        dateFormat = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
 
         val colorSurfaceVariant = getAttrColor(theme, Colors.colorSurfaceVariant)
         val colorError = getAttrColor(theme, Colors.colorError)
@@ -141,9 +142,9 @@ class DetailActivity : AppCompatActivity() {
         val colorOnErrorContainer = getAttrColor(theme, Colors.colorOnErrorContainer)
         val colorOnSecondaryContainer = getAttrColor(theme, Colors.colorOnSecondaryContainer)
 
-        binding.content.btnBattery.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
-        binding.content.btnLiquid.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
-        binding.content.btnMeasure.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+        binding.content.btnBattery.visibility = View.GONE
+        binding.content.btnLiquid.visibility = View.GONE
+        binding.content.btnMeasure.visibility = View.GONE
 
         binding.content.btnBattery.setOnClickListener {
             sendBroadcast(Intent(ActionID.ACTION_SEND_DEVICE).apply {
@@ -274,6 +275,42 @@ class DetailActivity : AppCompatActivity() {
                         binding.content.progressBar.max = entity.max
                         binding.content.progressBar.progress = entity.capacity
                         binding.content.progressBar.setProgressFormatter { _, _ -> "" }
+
+                        // 추세 계산
+                        if (batteries != null) {
+                            var lastBattery = -1
+                            var lastBatteryTime = System.currentTimeMillis()
+                            for (battery in batteries) {
+                                if (lastBattery > battery.battery) {
+                                    Dlog.d(TAG, "${Date(battery.timestamp)} : ${battery.battery} / ${lastBattery}")
+                                    break
+                                }
+                                lastBattery = battery.battery
+                                lastBatteryTime = battery.timestamp
+                            }
+
+                            val tangentBattery = if (batteries.size > 1) (batteries[0].battery - lastBattery).toFloat() / (batteries[0].timestamp - lastBatteryTime) else 1f
+                            val predictedBatteryTime = lastBatteryTime - lastBattery / tangentBattery
+                            Dlog.d(TAG, "${Date(predictedBatteryTime.toLong())}")
+                            binding.content.tvBatteryLowDate.text = getString(R.string.battery_low_date, dateTimeFormat.format(Date(predictedBatteryTime.toLong())))
+                        }
+                        if (capacities != null) {
+                            var lastCapacity = -1
+                            var lastCapacityTime = System.currentTimeMillis()
+                            for (capacity in capacities) {
+                                if (lastCapacity > capacity.capacity) {
+                                    Dlog.d(TAG, "${Date(capacity.timestamp)} : ${capacity.capacity} / ${lastCapacity}")
+                                    break
+                                }
+                                lastCapacity = capacity.capacity
+                                lastCapacityTime = capacity.timestamp
+                            }
+
+                            val tangentCapacity = if (capacities.size > 1) (capacities[0].capacity - lastCapacity).toFloat() / (capacities[0].timestamp - lastCapacityTime) else 1f
+                            val predictedCapacityTime = lastCapacityTime - lastCapacity / tangentCapacity
+                            Dlog.d(TAG, "${Date(predictedCapacityTime.toLong())}")
+                            binding.content.tvCapacityLowDate.text = getString(R.string.capacity_low_date, dateFormat.format(Date(predictedCapacityTime.toLong())))
+                        }
 
                         if (entity.capacity.toFloat() / entity.max <= 0.15) {
                             binding.content.tvLiquidCurrent.text = getString(R.string.capacity_current_format_warning, entity.capacity)

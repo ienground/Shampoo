@@ -19,7 +19,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_liquid"
-            app:layout_constraintTop_toBottomOf="@id/card_liquid"/>
+            app:layout_constraintTop_toBottomOf="@id/ic_battery_low"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/btn_liquid"
@@ -30,7 +30,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toEndOf="@id/btn_battery"
             app:layout_constraintEnd_toStartOf="@id/btn_measure"
-            app:layout_constraintTop_toBottomOf="@id/card_liquid"/>
+            app:layout_constraintTop_toBottomOf="@id/ic_battery_low"/>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/btn_measure"
@@ -42,7 +42,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toEndOf="@id/btn_liquid"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_liquid"/>
+            app:layout_constraintTop_toBottomOf="@id/ic_battery_low"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_liquid"
@@ -125,6 +125,50 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
+
+        <ImageView
+            android:id="@+id/ic_capacity_low"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_shampoo_alert"
+            app:tint="?attr/colorError"
+            android:layout_margin="@dimen/usual_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_liquid" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_capacity_low_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            tools:text="이때 사세여"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/ic_capacity_low"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ic_capacity_low"
+            app:layout_constraintBottom_toBottomOf="@id/ic_capacity_low" />
+
+        <ImageView
+            android:id="@+id/ic_battery_low"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_battery_alert"
+            app:tint="?attr/colorError"
+            android:layout_margin="@dimen/usual_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ic_capacity_low" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_battery_low_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            tools:text="이때 꺼져요"
+            android:layout_marginHorizontal="@dimen/usual_margin"
+            app:layout_constraintStart_toEndOf="@id/ic_battery_low"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ic_battery_low"
+            app:layout_constraintBottom_toBottomOf="@id/ic_battery_low" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"

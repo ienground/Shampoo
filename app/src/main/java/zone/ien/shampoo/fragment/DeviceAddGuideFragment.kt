@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -87,6 +88,14 @@ class DeviceAddGuideFragment : Fragment() {
                                 zero = zeroValues.average().toInt()
 
                                 binding.tvState.text = getString(R.string.measuring)
+
+                                // 소리내기
+                                val mediaPlayer = MediaPlayer()
+                                val fileDescriptor = resources.openRawResourceFd(R.raw.zeroing_end)
+                                mediaPlayer.setDataSource(fileDescriptor.fileDescriptor, fileDescriptor.startOffset, fileDescriptor.length)
+                                fileDescriptor.close()
+                                mediaPlayer.prepare()
+                                mediaPlayer.start()
                             }
                         } else {
                             zeroDeterminedValue = value

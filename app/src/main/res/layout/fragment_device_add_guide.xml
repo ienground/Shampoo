@@ -12,7 +12,7 @@
             android:id="@+id/img_guide"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/ic_launcher_background"
+            android:src="@drawable/img_guide"
             android:background="@drawable/rounded_corners"
             android:layout_margin="@dimen/usual_margin"
             app:layout_constraintDimensionRatio="1:1"

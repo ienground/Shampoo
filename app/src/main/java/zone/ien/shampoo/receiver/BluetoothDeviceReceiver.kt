@@ -138,6 +138,7 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                     putExtra(IntentKey.MESSAGE_VALUE, value)
                 })
 
+                return
                 GlobalScope.launch(Dispatchers.IO) {
                     gatt.device?.let {
                         if (deviceIds[it.address] != -1L) {
@@ -316,13 +317,6 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                 val type = intent.getIntExtra(IntentKey.MESSAGE_TYPE, -1)
                 val message = intent.getStringExtra(IntentKey.MESSAGE_VALUE) ?: ""
                 sendMessage(context, address, type, message)
-            }
-            ActionID.ACTION_REQUEST_CONNECT_STATE -> {
-                val address = intent.getStringExtra(IntentKey.DEVICE_ADDRESS) ?: ""
-                context.sendBroadcast(Intent(IntentID.ACTION_RESPONSE_CONNECT_STATE).apply {
-                    putExtra(IntentKey.DEVICE_ADDRESS, address)
-                    putExtra(IntentKey.CONNECT_STATE, gatts[address] != null)
-                })
             }
         }
     }

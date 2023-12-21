@@ -44,6 +44,9 @@ interface DeviceLogDao {
     @Query("SELECT * FROM DeviceLogDatabase WHERE (parentId = :parentId AND timestamp >= :startTime AND timestamp <= :endTime)")
     fun getByParentId(parentId: Long, startTime: Long, endTime: Long): List<DeviceLogEntity>
 
+    @Query("DELETE FROM DeviceLogDatabase WHERE id = :id")
+    fun delete(id: Long)
+
     @Query("DELETE FROM DeviceLogDatabase WHERE parentId = :parentId")
     fun deleteByParentId(parentId: Long)
 

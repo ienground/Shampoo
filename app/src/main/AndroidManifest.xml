@@ -34,6 +34,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Shampoo"
         tools:targetApi="31">
+        <activity android:name=".activity.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.EditActivity"
             android:exported="false" />
@@ -50,8 +52,15 @@
             android:name=".activity.DetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MainActivity"
-            android:exported="true">
+            android:name=".activity.DevModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.DevEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.IntroActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Shampoo.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
