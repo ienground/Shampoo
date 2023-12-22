@@ -586,7 +586,7 @@ class SettingsActivity : AppCompatActivity() {
                                 val id = placeDatabase?.getDao()?.add(entity)
                                 entity.id = id
                                 withContext(Dispatchers.Main) {
-                                    ((binding.root as RecyclerView).adapter as PlaceAdapter).add(entity)
+                                    (binding.list.adapter as PlaceAdapter).add(entity)
                                     dialog.dismiss()
                                 }
                             }

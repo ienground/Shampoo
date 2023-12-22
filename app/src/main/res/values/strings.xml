@@ -109,5 +109,7 @@
     <string name="zeroing">영점 조절 중..</string>
     <string name="battery_low_date">%1$s에 꺼져요</string>
     <string name="capacity_low_date">%1$s에 소진돼요</string>
+    <string name="scan_new_model">새 모델 스캔하기</string>
+    <string name="save">Save</string>
 
 </resources>

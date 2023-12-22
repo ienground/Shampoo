@@ -12,6 +12,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -35,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import zone.ien.shampoo.BuildConfig
 import zone.ien.shampoo.R
+import zone.ien.shampoo.adapter.DashboardGroupAdapter
 import zone.ien.shampoo.adapter.DeviceLogAdapter
 import zone.ien.shampoo.constant.ActionID
 import zone.ien.shampoo.constant.IntentKey
@@ -73,6 +76,8 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var dateTimeFormat: SimpleDateFormat
     private lateinit var dateFormat: SimpleDateFormat
 
+    private lateinit var editActivityLauncher: ActivityResultLauncher<Intent>
+
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +96,10 @@ class DetailActivity : AppCompatActivity() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    android.R.id.home -> {
+                        onBackPressedDispatcher.onBackPressed()
+                        true
+                    }
                     R.id.menu_delete -> {
                         MaterialAlertDialogBuilder(this@DetailActivity, R.style.Theme_Shampoo_MaterialAlertDialog).apply {
                             setIcon(R.drawable.ic_delete)
@@ -116,6 +125,9 @@ class DetailActivity : AppCompatActivity() {
                         true
                     }
                     R.id.menu_edit -> {
+                        editActivityLauncher.launch(Intent(applicationContext, EditActivity::class.java).apply {
+                            putExtra(IntentKey.DATA_ID, id)
+                        })
                         true
                     }
                     else -> false
@@ -244,6 +256,41 @@ class DetailActivity : AppCompatActivity() {
                 putExtra(IntentKey.DEVICE_ADDRESS, device?.address)
                 putExtra(IntentKey.LOG_TYPE, if (binding.content.tabs.selectedTabPosition == 0) MessageType.TYPE_LEVEL else MessageType.TYPE_BATTERY)
             })
+        }
+
+        editActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val id = result.data?.getLongExtra(IntentKey.DATA_ID, -1) ?: -1
+                if (id != -1L) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val entity = deviceDatabase?.getDao()?.get(id)
+
+                        withContext(Dispatchers.Main) {
+                            entity?.let {
+                                device = it
+                                withContext(Dispatchers.Main) {
+                                    binding.collapseToolbar.title = entity.title
+                                    binding.tvProduct.text = entity.product
+                                    binding.content.tvLiquidMax.text = getString(R.string.capacity_max_format, entity.max)
+                                    binding.content.progressBar.max = entity.max
+
+                                    val product = productList.find { it[3] == entity.model.toString() }
+                                    product?.let {
+                                        if (it[7] != "") {
+                                            Dlog.d(TAG, "link: ${it[7]}")
+                                            Glide.with(this@DetailActivity)
+                                                .load(it[7])
+                                                .transition(DrawableTransitionOptions.withCrossFade())
+                                                .error(R.drawable.ic_error)
+                                                .into(binding.imgProduct)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         id = intent.getLongExtra(IntentKey.DATA_ID, -1)

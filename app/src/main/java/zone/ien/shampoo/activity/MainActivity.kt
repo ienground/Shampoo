@@ -2,6 +2,8 @@ package zone.ien.shampoo.activity
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -18,6 +20,8 @@ import android.os.Bundle
 import android.view.animation.CycleInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,6 +32,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zone.ien.shampoo.R
 import zone.ien.shampoo.constant.ActionID
+import zone.ien.shampoo.constant.ChannelID
+import zone.ien.shampoo.constant.MessageType
+import zone.ien.shampoo.constant.NotificationID
 import zone.ien.shampoo.constant.PendingIntentReqCode
 import zone.ien.shampoo.databinding.ActivityMainBinding
 import zone.ien.shampoo.databinding.DialogPermissionBinding
@@ -36,6 +43,8 @@ import zone.ien.shampoo.fragment.MainStoreFragment
 import zone.ien.shampoo.receiver.BTSyncReceiver
 import zone.ien.shampoo.receiver.BluetoothDeviceReceiver
 import zone.ien.shampoo.room.DeviceDatabase
+import zone.ien.shampoo.room.NotificationsDatabase
+import zone.ien.shampoo.room.NotificationsEntity
 import zone.ien.shampoo.utils.ColorUtils.getAttrColor
 import zone.ien.shampoo.utils.Colors
 import zone.ien.shampoo.utils.Dlog
@@ -229,6 +238,46 @@ class MainActivity : AppCompatActivity(),
         val calendar = Calendar.getInstance()
         val pendingIntent = PendingIntent.getBroadcast(context, PendingIntentReqCode.BUBBLE_SCHEDULE_DAY, Intent(context, BTSyncReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, 60 * 1000L, pendingIntent)
+
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val notificationsDatabase = NotificationsDatabase.getInstance(applicationContext)
+//            var title = context.getString(R.string.battery_low_title, "1번 부스")
+//            var content = context.getString(R.string.battery_low_content, 15)
+//            var calendar = Calendar.getInstance().apply {
+//                set(Calendar.DAY_OF_MONTH, 17)
+//            }
+//            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//            nm.createNotificationChannel(NotificationChannel(ChannelID.LIQUID_LOW_ID, "low", NotificationManager.IMPORTANCE_HIGH))
+//            nm.createNotificationChannel(NotificationChannel(ChannelID.BATTERY_LOW_ID, "low", NotificationManager.IMPORTANCE_HIGH))
+//
+//            NotificationCompat.Builder(context, ChannelID.BATTERY_LOW_ID).apply {
+//                setContentTitle(title)
+//                setContentText(content)
+//                setSmallIcon(R.drawable.ic_battery_alert)
+//                color = ContextCompat.getColor(context, R.color.md_theme_light_primary)
+//
+//                nm.notify(NotificationID.SHAMPOO_BATTERY_LOW + 1, build())
+//            }
+//
+//            var notiEntity = NotificationsEntity(MessageType.TYPE_BATTERY_LOW, calendar.timeInMillis, title, content, 10)
+//                        notificationsDatabase?.getDao()?.add(notiEntity)
+//
+//            title = context.getString(R.string.liquid_low_title, "1번 부스")
+//            content = context.getString(R.string.liquid_low_content, 80)
+//            notiEntity = NotificationsEntity(MessageType.TYPE_LEVEL_LOW, calendar.timeInMillis + 132 * 60 * 1000, title, content, 10)
+//                        notificationsDatabase?.getDao()?.add(notiEntity)
+//
+//            NotificationCompat.Builder(context, ChannelID.LIQUID_LOW_ID).apply {
+//                setContentTitle(title)
+//                setContentText(content)
+//                setSmallIcon(R.drawable.ic_shampoo_alert)
+//                color = ContextCompat.getColor(context, R.color.md_theme_light_primary)
+//
+//                nm.notify(NotificationID.SHAMPOO_LIQUID_LOW + 1, build())
+//            }
+//
+//
+//        }
     }
 
     private fun loadFragment(fragment: Fragment?): Boolean {

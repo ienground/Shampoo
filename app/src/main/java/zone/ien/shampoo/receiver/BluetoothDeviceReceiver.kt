@@ -138,7 +138,6 @@ class BluetoothDeviceReceiver : BroadcastReceiver() {
                     putExtra(IntentKey.MESSAGE_VALUE, value)
                 })
 
-                return
                 GlobalScope.launch(Dispatchers.IO) {
                     gatt.device?.let {
                         if (deviceIds[it.address] != -1L) {

@@ -103,7 +103,7 @@ class DeviceAddGuideFragment : Fragment() {
                             zeroValues.clear()
                         }
                     } else if (isMeasuring) {
-                        val valueWithZero = abs(value - zero)
+                        val valueWithZero = abs(value - zero) / 5
                         binding.tvWeight.text = valueWithZero.toString()
                         values.add(valueWithZero)
                         Dlog.d(TAG, "receive ${Date(determinedTime)} ${determinedValue} ${valueWithZero}")
@@ -117,7 +117,7 @@ class DeviceAddGuideFragment : Fragment() {
                                 binding.progress.visibility = View.INVISIBLE
                                 binding.icCheck.visibility = View.VISIBLE
                                 binding.tvState.text = binding.tvState.context.getString(R.string.measurement_completed)
-                                binding.tvWeight.text = values.average().toString()
+                                binding.tvWeight.text = values.average().toInt().toString()
                                 DeviceAddActivity.deviceCapacity = values.average().toInt()
                                 callbackListener?.setButtonEnabled(isPrev = false, isEnabled = true)
                             }
